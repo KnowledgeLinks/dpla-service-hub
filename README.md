@@ -26,19 +26,25 @@ service hub.
 
 1.  Clone or fork the [project repository][HOME]:
 
-    git clone https://github.com/KnowledgeLinks/dpla-service-hub.git 
+    ```
+    git clone https://github.com/KnowledgeLinks/dpla-service-hub.git
+    ``` 
 
 1.  Initialize and update submodules
 
+    ```
     cd dpla-service-hub/
     git submodule init
     git submodule update
+    ```
 
 1.  Create an instance directory for configuration and custom RDF rules:
 
+    ```
     mkdir instance
     cd instance/
     touch config.py
+    ```
 
 ### Config.py options
 To configure [dpla-service-hub][HOME], you'll need to add these minimum 
