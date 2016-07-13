@@ -1,3 +1,6 @@
 [submodule "bibcat"]
 	path = bibcat
 	url = https://github.com/KnowledgeLinks/rdfw-bibcat.git
+[submodule "rdfw"]
+	path = rdfw
+	url = https://github.com/KnowledgeLinks/rdfframework.git

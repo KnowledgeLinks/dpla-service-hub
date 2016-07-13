@@ -1,0 +1,30 @@
+@prefix bc: <http://knowledgelinks.io/ns/bibcat/> .
+@prefix bf: <http://id.loc.gov/ontologies/bibframe/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix kds: <http://knowledgelinks.io/ns/data-structures/> .
+@prefix kdr: <http://knowledgelinks.io/ns/data-resources/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pcdm: <http://pcdm.org/models#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix relators: <http://id.loc.gov/vocabulary/relators/> .
+@prefix dcr: <http://knowledgelinks.io/ns/dc/> .
+@prefix loc: <http://id.loc.gov/> .
+@prefix schema: <http://schema.org/> .
+
+bc:bf-Organization a kds:PropertyLinker;
+    kds:destPropUri [ bf:heldBy <http://denverpubliclibrary.org/> ] ;
+    kds:destClassUri bf:Item .
+
+bc:dc-description a kds:PropertyLinker ;
+    kds:delimiterProp ";" ;
+    kds:hasIndividualNodes "true" .
+
+bc:dc-identifier a kds:PropertyLinker;
+    kds:delimiterProp "\n" ;
+    kds:hasIndividualNodes "true" .
+
+bc:dc-subject a kds:PropertyLinker ;
+    kds:delimiterProp ";" ;
+    kds:hasIndividualNodes "true" .
