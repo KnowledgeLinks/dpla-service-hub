@@ -1,0 +1,104 @@
+@prefix bc: <http://knowledgelinks.io/ns/bibcat/> .
+@prefix bf: <http://id.loc.gov/ontologies/bibframe/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix kds: <http://knowledgelinks.io/ns/data-structures/> .
+@prefix kdr: <http://knowledgelinks.io/ns/data-resources/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pcdm: <http://pcdm.org/models#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix relators: <http://id.loc.gov/vocabulary/relators/> .
+@prefix dcr: <http://knowledgelinks.io/ns/dc/> .
+@prefix loc: <http://id.loc.gov/> .
+@prefix schema: <http://schema.org/> .
+
+bc:csv-ObjectID a kds:PropertyLinker;
+    kds:srcPropKey "Object ID" ;
+    kds:destPropUri rdf:value ;
+    kds:destClassUri bf:Local ;
+    kds:linkedRange bf:identifiedBy ;
+    kds:linkedClass bf:Instance .
+
+#bc:csv-ObjectName a kds:PropertyLinker ;
+#    kds:srcPropKey "Object Name" ;
+#    kds:linkedClass bf:Instance .
+
+bc:csv-Description a kds:PropertyLinker ;
+    kds:srcPropKey "Description" ;
+    kds:destClassUri bf:Note ;
+    kds:linkedRange bf:note ;
+    kds:linkedClass bf:Instance .
+
+bc:csv-Title a kds:PropertyLinker ;
+    kds:srcPropKey "Title" ;
+    kds:destPropUri bf:mainTitle;
+    kds:destClassUri bf:InstanceTitle;
+    kds:linkedRange bf:title;
+    kds:linkedClass bf:Instance . 
+
+bc:csv-Non-OriginalTitle a kds:PropertyLinker ;
+    kds:srcPropKey "Non-Original Title" ;
+    kds:destPropUri bf:mainTitle;
+    kds:destClassUri bf:InstanceTitle;
+    kds:linkedRange bf:title;
+    kds:linkedClass bf:Instance . 
+
+bc:csv-Inscription a kds:PropertyLinker ;
+    kds:srcPropKey "Inscription" ;
+    kds:destAdditionalPropUris [ bf:noteType "inscription"@en ];
+    kds:hasIndividualNodes "true" ;
+    kds:destPropUri rdfs:label ;
+    kds:destClassUri bf:Note ;
+    kds:linkedRange bf:note ;
+    kds:linkedClass bf:Instance .
+
+bc:csv-MakerTerm a kds:PropertyLinker ;
+    kds:srcPropKey "Maker.Term" ;
+    kds:delimiterProp "," ;
+    kds:hasIndividualNodes "true" ;
+    kds:destClassUri bf:Agent ;
+    kds:destPropUri schema:name ;
+    kds:linkedRange realtors:cre ;
+    kds:linkedClass bf:Instance .
+
+bc:csv-DatesRange a kds:PropertyLinker ;
+    kds:srcPropKey "Dates.Date Range" ;
+    kds:hasIndividualNodes "true" ; 
+    kds:destClassUri bf:Work ;
+    kds:destPropUri bf:temporalCoverage ;
+    kds:linkedRange bf:instanceOf ;
+    kds:linkedClass bf:Instance .
+  
+bc:csv-Dimension a kds:PropertyLinker ;
+    kds:srcPropKey "Dimension" ;
+    kds:destClassUri bf:Extent ;
+    kds:destPropUri rdf:value ;
+    kds:linkedRange bf:extent ;
+    kds:linkedClass bf:Instance .
+
+bc:csv-SubjectTerm a kds:PropertyLinker ;
+    kds:srcPropKey "Subject.Term" ;
+    kds:delimiterProp "," ;
+    kds:hasIndividualNodes "true" ; 
+    kds:destClassUri bf:Topic ;
+    kds:destPropUri rdf:value ;
+    kds:linkedRange bf:subject ;
+    kds:linkedClass bf:Instance .
+
+bc:csv-LocaleTerm a kds:PropertyLinker ;
+    kds:srcPropKey "Locale.Term" ;
+    kds:delimiterProp "," ;
+    kds:hasIndividualNodes "true" ;
+    kds:destClassUri bf:Place ;
+    kds:destPropUri rdf:value ;
+    kds:linkedRange bf:place ;
+    kds:linkedClass bf:Instance .
+  
+bc:csv-CultureTerm a kds:PropertyLinker ;
+    kds:srcPropKey "Culture.Term" ;
+    kds:delimiterProp "," ;
+    kds:destClassUri bf:Topic ;
+    kds:destPropUri rdf:value ;
+    kds:linkedRange bf:subject ;
+    kds:linkedClass bf:Instance .
