@@ -59,7 +59,7 @@ bc:csv-MakerTerm a kds:PropertyLinker ;
     kds:hasIndividualNodes "true" ;
     kds:destClassUri bf:Agent ;
     kds:destPropUri schema:name ;
-    kds:linkedRange realtors:cre ;
+    kds:linkedRange relators:cre ;
     kds:linkedClass bf:Instance .
 
 bc:csv-DatesRange a kds:PropertyLinker ;
