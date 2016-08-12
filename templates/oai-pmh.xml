@@ -6,15 +6,17 @@
                                 http://www.openarchives.org/OAI/2.0/static-repository.xsd">
   <Identify>
     <oai:repositoryName>
-        {{ repo.value(subject=repo_uri, predicate=ns_mgr.rdfs.label) }}
+        {{ repo.name }}
     </oai:repositoryName>
     <oai:baseURL>
-        {{ repo.value(subject=repo_uri, predicate=ns_mgr.schema.url) }}/oai/an.oai.org/mini.xml
+        {{ repo.baseURL }}
    </oai:baseURL>
     <oai:protocolVersion>2.0</oai:protocolVersion>
+    {% if repo.adminEmail %}
     <oai:adminEmail>
-        {{ repo.value(subject=repo_uri, predicate= }}
+        {{ repo.adminEmail }}
     </oai:adminEmail>
+    {% endif %}
     <oai:earliestDatestamp>2002-09-19</oai:earliestDatestamp>
     <oai:deletedRecord>no</oai:deletedRecord>
     <oai:granularity>YYYY-MM-DD</oai:granularity>
@@ -32,6 +34,7 @@
     </oai:metadataFormat>
   </ListMetadataFormats>
   <ListRecords metadataPrefix="oai_dc">
+    {#
     {% for item_uri in repo.subjects(predicate=ns_mgr.rdf.type,
                                      object=ns_mgr.bf.Item) %}
     {% set instance_uri = repo.value(subject=item_uri, object=ns_mgr.itemOf) %}
@@ -71,6 +74,7 @@
       </oai:metadata>
     </oai:record>  
     {% endfor %}
+    #}
     <oai:record>
       <oai:header>
         <oai:identifier>oai:perseus:Perseus:text:1999.02.0084</oai:identifier>
