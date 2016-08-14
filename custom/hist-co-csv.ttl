@@ -13,11 +13,22 @@
 @prefix loc: <http://id.loc.gov/> .
 @prefix schema: <http://schema.org/> .
 
+bc:bf-Organization a kds:PropertyLinker;
+    kds:destPropUri [ bf:heldBy <http://www.historycolorado.org/> ] ;
+    kds:destClassUri bf:Item .
+
 bc:csv-ObjectID a kds:PropertyLinker;
     kds:srcPropKey "Object ID" ;
     kds:destPropUri rdf:value ;
     kds:destClassUri bf:Local ;
     kds:linkedRange bf:identifiedBy ;
+    kds:linkedClass bf:Instance .
+
+bc:csv-Collection a kds:PropertyLinker;
+    kds:srcPropKey "Collection Name" ;
+    kds:destPropUri rdf:value ;
+    kds:destClassUri pcdm:Collection ;
+    kds:linkedRange bf:partOf ;
     kds:linkedClass bf:Instance .
 
 #bc:csv-ObjectName a kds:PropertyLinker ;
@@ -27,6 +38,7 @@ bc:csv-ObjectID a kds:PropertyLinker;
 bc:csv-Description a kds:PropertyLinker ;
     kds:srcPropKey "Description" ;
     kds:destClassUri bf:Note ;
+    kds:destPropUri rdfs:label ;
     kds:linkedRange bf:note ;
     kds:linkedClass bf:Instance .
 

@@ -19,6 +19,7 @@ parser.add_argument('initiate', type=str, help="OAI-PMH Harvester")
 @api.representation('text/xml')
 def output_xml(data, code, headers=None):
     resp = app.make_response(data)
+    resp.headers['Content-Type'] = 'text/xml'
     return resp
     
 
@@ -38,6 +39,7 @@ class StaticRepositoryGateway(Resource):
         oai_info = {}
         url_parts = urllib.parse.urlparse(static_repo_url)
         institution_url = "{}://{}".format(url_parts.scheme, url_parts.netloc)
+        print("INSITUTION " + institution_url)
         oai_info['baseURL'] = institution_url
         identify_result = requests.post(
             app.config.get("TRIPLESTORE_URL"),
