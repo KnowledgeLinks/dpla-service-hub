@@ -26,7 +26,7 @@ bc:csv-ObjectID a kds:PropertyLinker;
 
 bc:csv-Collection a kds:PropertyLinker;
     kds:srcPropKey "Collection Name" ;
-    kds:destPropUri rdf:value ;
+    kds:destPropUri rdfs:label ;
     kds:destClassUri pcdm:Collection ;
     kds:linkedRange bf:partOf ;
     kds:linkedClass bf:Instance .
@@ -114,3 +114,18 @@ bc:csv-CultureTerm a kds:PropertyLinker ;
     kds:destPropUri rdf:value ;
     kds:linkedRange bf:subject ;
     kds:linkedClass bf:Instance .
+
+<http://id.loc.gov/authorities/names/no2016081398> a kds:AddEntity,
+    bf:Organization ;
+    rdfs:label "United States. Work Projects Administration (Colo.)" ;
+    schema:name "Works Project Administration",
+        "WPA" .
+
+<http://id.loc.gov/authorities/names/n50001014> a kds:AddEntity,
+    bf:Organization ;
+    rdfs:label "Federal Art Project" ;
+    schema:name "National Art Administration Project" .
+
+<http://www.historycolorado.org/> a kds:AddEntity,
+    bf:Organization ;
+    rdfs:label "History Colorado" .
