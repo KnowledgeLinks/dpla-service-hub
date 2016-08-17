@@ -34,13 +34,10 @@
     </oai:metadataFormat>
   </ListMetadataFormats>
   <ListRecords metadataPrefix="oai_dc">
-    {#
-    {% for item_uri in repo.subjects(predicate=ns_mgr.rdf.type,
-                                     object=ns_mgr.bf.Item) %}
-    {% set instance_uri = repo.value(subject=item_uri, object=ns_mgr.itemOf) %}
+    {% for instance in repo['instances'] %}
     <oai:record> 
       <oai:header>
-        <oai:identifier>oai:arXiv:cs/0112017</oai:identifier> 
+        <oai:identifier>{{ instance.uri }}</oai:identifier> 
         <oai:datestamp>2001-12-14</oai:datestamp>
       </oai:header>
       <oai:metadata>
@@ -50,89 +47,18 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
             xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
                                 http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
-            {% for title in repo.objects(subject=instance_uri, predicate=ns_mgr.bf.title) %}
                 <dc:title>
-                {{ repo.value(subject=title, predicate=ns_mgr.bf.mainTitle) }}
+                {{ instance.name }}
                 </dc:title> 
-            {% endfor %}
-            {% for predicate in [ns_mgr.relators.aut, ns_mgr.relators.cmp, ns_mgr.relators.pht] %}
-                <dc:creator></dc:creator>
-            {% endfor %}
-          <dc:subject>Digital Libraries</dc:subject> 
-          <dc:description>With the increasing technical sophistication of 
-            both information consumers and providers, there is 
-            increasing demand for more meaningful experiences of digital 
-            information. We present a framework that separates digital 
-            object experience, or rendering, from digital object storage 
-            and manipulation, so the rendering can be tailored to 
-            particular communities of users.
+          <dc:subject></dc:subject> 
+          <dc:description>
           </dc:description> 
-          <dc:description>Comment: 23 pages including 2 appendices, 
-            8 figures</dc:description> 
-          <dc:date>2001-12-14</dc:date>
+          <dc:description> 
+          </dc:description> 
+          <dc:date></dc:date>
         </oai_dc:dc>
       </oai:metadata>
     </oai:record>  
     {% endfor %}
-    #}
-    <oai:record>
-      <oai:header>
-        <oai:identifier>oai:perseus:Perseus:text:1999.02.0084</oai:identifier>
-        <oai:datestamp>2002-05-01</oai:datestamp>
-      </oai:header>
-      <oai:metadata>
-        <oai_dc:dc 
-            xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
-            xmlns:dc="http://purl.org/dc/elements/1.1/" 
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-            xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
-                                http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
-          <dc:title>Germany and its Tribes</dc:title>
-          <dc:creator>Tacitus</dc:creator>
-          <dc:type>text</dc:type>
-          <dc:source>Complete Works of Tacitus. Tacitus. Alfred John Church. 
-            William Jackson Brodribb. Lisa Cerrato. edited for Perseus. 
-            New York: Random House, Inc. Random House, Inc. reprinted 1942.
-          </dc:source>
-          <dc:identifier>http://www.perseus.tufts.edu/cgi-bin/ptext?
-            doc=Perseus:text:1999.02.0083</dc:identifier>
-        </oai_dc:dc>
-      </oai:metadata>
-    </oai:record>
-  </ListRecords>
-  <ListRecords metadataPrefix="oai_rfc1807">
-    <oai:record>
-      <oai:header>
-        <oai:identifier>oai:arXiv:cs/0112017</oai:identifier>
-        <oai:datestamp>2001-12-14</oai:datestamp>
-      </oai:header>
-      <oai:metadata>
-        <rfc1807 
-            xmlns="http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt" 
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-            xsi:schemaLocation="http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt
-                                http://www.openarchives.org/OAI/1.1/rfc1807.xsd">
-          <bib-version>v2</bib-version>
-          <id>cs/0112017</id>
-          <entry>December 23, 2001</entry>
-          <title>Using Structural Metadata to Localize Experience of 
-             Digital Content</title>
-          <author>Naomi Dushay</author>
-          <date>December 14, 2001</date>
-        </rfc1807>
-      </oai:metadata>
-      <oai:about>
-        <oai_dc:dc 
-            xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
-            xmlns:dc="http://purl.org/dc/elements/1.1/" 
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-            xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
-                                http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
-          <dc:publisher>Los Alamos arXiv</dc:publisher>
-          <dc:rights>Metadata may be used without restrictions as long as 
-            the oai identifier remains attached to it.</dc:rights>
-        </oai_dc:dc>
-      </oai:about>
-    </oai:record>
   </ListRecords>
 </Repository>

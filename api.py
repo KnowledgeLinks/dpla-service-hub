@@ -53,8 +53,25 @@ WHERE {{
     if len(bindings) < 1:
         return abort(404)
     oai_info['name'] = bindings[0].get('name').get('value')
+    sparql_query = """prefix bf: <http://id.loc.gov/ontologies/bibframe/>
+SELECT DISTINCT ?instance ?mtitle
+WHERE {{
+?instance rdf:type bf:Instance .
+?instance bf:title ?title .
+?title bf:mainTitle ?mtitle
+}} LIMIT 100"""
+    instance_result = requests.post(
+        app.config.get("TRIPLESTORE_URL"),
+        data={"query": sparql_query,
+              "format": "json"})
+    if instance_result.status_code > 300:
+        raise Exception("Error with getting Instances")
+    oai_info['instances'] = []
+    bindings = instance_result.json().get('results').get('bindings')
+    for row in bindings:
+        oai_info['instances'].append({"name": row.get('mtitle').get('value'),
+                                      "uri": row.get('instance').get('value')})
     return Response(render_template('oai-pmh.xml', repo=oai_info), mimetype="text/xml")
-  
     
 if __name__ == '__main__':
     app.run(debug=True)
