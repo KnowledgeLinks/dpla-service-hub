@@ -6,6 +6,7 @@ import json
 import xml.etree.ElementTree as etree
 import requests
 import urllib.parse
+from dpla_map.feed import generate_maps
 from flask import abort, Flask, request, render_template, Response
 
 app = Flask(__name__, instance_relative_config=True)
@@ -18,6 +19,10 @@ with open("VERSION") as fo:
 def home():
     return "KnowledgeLink.io's DPLA Service Hub Version {}".format(__version__)
 
+
+@app.route("/map/v4")
+def map():
+    return generate_maps()
 
 @app.route("/oai")
 def oai_switcher():

@@ -113,12 +113,12 @@ dc_ingester = dc.DCIngester(custom=['dpl-dc.ttl'])
 with open("dpla-service-hub/tmp/sample_recs.pickle", "rb") as fo:
     sample_recs = pickle.load(fo)
 for rdf_record in sample_recs:
-    dc_ingester.transform(source=rdf_record)
+    dc_ingester.transform(xml=etree.tostring(rdf_record))
+    dc_ingester.add_to_triplestore()
 ```
-```
-
 
 ### Dublin Core CSV
+
 
 ## Deploying
 
