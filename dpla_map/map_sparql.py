@@ -5,9 +5,28 @@ from bibcat.ingesters.ingester import NS_MGR
 
 PREFIX = NS_MGR.prefix()
 
-GET_ENTITIES = PREFIX + """
-SELECT DISTINCT entity_iri 
+GET_ENTITY_INFO = PREFIX + """
+SELECT ?value
 WHERE {{
-    entity_iri rdf:type bf:Item
+    <{0}> <{1}> ?prop .
+    OPTIONAL {{ ?prop rdf:value ?value }}
+    OPTIONAL {{ ?prop rdfs:label ?value }}
+}}"""
 
-}} LIMIT 1000 OFFSET {0}"""
+GET_ENTITIES = PREFIX + """
+SELECT DISTINCT ?entity_iri 
+WHERE {{
+    ?entity_iri rdf:type <{0}>
+
+}} LIMIT 100 OFFSET {1}"""
+
+GET_RULES = PREFIX + """
+SELECT ?destPropUri ?linkedRange ?linkedClass
+WHERE {{
+    ?rule rdf:type kds:PropertyExport .
+    ?rule kds:destClassUri <{0}> .
+    ?rule kds:destPropUri ?destPropUri .
+    ?rule kds:linkedRange ?linkedRange .
+    ?rule kds:linkedClass ?linkedClass .
+}}"""
+

@@ -3,6 +3,7 @@ __author__ = "Jeremy Nelson, Mike Stabile"
 
 import click
 import json
+import os
 import xml.etree.ElementTree as etree
 import requests
 import urllib.parse
@@ -12,7 +13,9 @@ from flask import abort, Flask, request, render_template, Response
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
 
-with open("VERSION") as fo:
+PROJECT_BASE =  os.path.abspath(os.path.dirname(__file__))
+
+with open(os.path.join(PROJECT_BASE, "VERSION")) as fo:
     __version__ = fo.read()   
 
 @app.route("/")
