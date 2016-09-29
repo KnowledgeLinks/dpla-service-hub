@@ -1,0 +1,117 @@
+@prefix bc: <http://knowledgelinks.io/ns/bibcat/> .
+@prefix bf: <http://id.loc.gov/ontologies/bibframe/> .
+@prefix cnt: <http://www.w3.org/2011/content#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix dcmitype: <http://purl.org/dc/dcmitype/> .
+@prefix dpla: <http://dp.la/about/map/> 
+@prefix edm: <http://www.europeana.eu/schemas/edm/> .
+@prefix gn: <http://www.geonames.org/ontology#> .
+@prefix kds: <http://knowledgelinks.io/ns/data-structures/> .
+@prefix kdr: <http://knowledgelinks.io/ns/data-resources/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix ore: <http://www.openarchives.org/ore/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pcdm: <http://pcdm.org/models#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix relators: <http://id.loc.gov/vocabulary/relators/> .
+@prefix dcr: <http://knowledgelinks.io/ns/dc/> .
+@prefix loc: <http://id.loc.gov/> .
+@prefix schema: <http://schema.org/> .
+@prefix wgs84: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+
+bc:dpla-Collection a kds:PropertyExport ;
+    kds:destPropUri dcterms:isPartOf ;
+    kds:destClassUri dpla:SourceResource ;
+    kds:linkedRange bf:partOf ;
+    kds:linkedClass pcdm:Collection .
+
+bc:dpla-Creator a kds:PropertyExport ;
+    kds:destPropUri dcterms:creator ;
+    kds:destClassUri dpla:SourceResource ;
+    kds:linkedRange relators:cre ;
+    kds:linkedClass bf:Instance .
+
+bc:dpla-Date a kds:PropertyExport ;
+    kds:destPropUri dc:date ;
+    kds:destClassUri dpla:SourceResource ;
+    kds:linkedRange bf:originDate ;
+    kds:linkedClass bf:Work .
+
+bc:dpla-Format a kds:PropertyExport ;
+    kds:destPropUri dc:format ;
+    kds:destClassUri dpla:SourceResource ;
+    kds:linkedRange bf:carrier ;
+    kds:linkedClass bf:Instance .
+
+bc:dpla-Language a kds:PropertyExport ;
+    kds:destPropUri dcterms:language ;
+    kds:destClassUri dpla:SourceResource ;
+    kds:linkedRange bf:language ;
+    kds:linkedClass bf:Instance .
+
+bc:dpla-Place a kds:PropertyExport ;
+    kds:destPropUri dcterms:spatial ;
+    kds:destClassUri dpla:SourceResource ;
+    kds:linkedRange bf:place ;
+    kds:linkedClass bf:Instance .
+
+bc:dpla-Publisher a kds:PropertyExport ;
+    kds:destPropUri dcterms:publisher ;
+    kds:destClassUri dpla:SourceResource ;
+    kds:linkedRange relators:pub ;
+    kds:linkedClass bf:Instance .
+
+bc:dpla-Rights a kds:PropertyExport ;
+    kds:destPropUri dc:rights ;
+    kds:destClassUri dpla:SourceResource ;
+    kds:linkedRange bf:usageAndAccessPolicy ;
+    kds:linkedClass bf:Instance .
+
+bc:dpla-Subject a kds:PropertyExport ;
+    kds:destPropUri dcterms:subject ;
+    kds:destClassUri dpla:SourceResource ;
+    kds:linkedRange bf:subject ;
+    kds:linkedClass bf:Instance .
+
+bc:dpla-Title a kds:PropertyExport ;
+    kds:destPropUri dcterms:title ;
+    kds:destClassUri dpla:SourceResource ;
+    kds:linkedRange [ a bf:InstanceTitle ;
+                      rdfs:label bf:mainTitle ];
+    kds:linkedClass bf:Instance .
+
+bc:dpla-Type a kds:PropertyExport ;
+    kds:destPropUri dcterms:type ;
+    kds:destClassUri dpla:SourceResource ;
+    kds:linkedRange bf:media, 
+        bf:carrier, 
+        bf:genreForm ;
+    kds:linkedClass bf:Instance .
+    
+bc:edm-StandardizedRightsStatement a kds:PropertyExport ;
+    kds:destPropUri edm:rights ;
+    kds:destClassUri edm:WebResource ;
+    kds:linkedRange bf:usageAndAccessPolicy ;
+    kds:linkedClass bf:Instance .
+
+bc:ore-DataProvider a kds:PropertyExport ;
+    kds:destPropUri edm:dataProvider ;
+    kds:destClassUri ore:Aggregation ;
+    kds:linkedRange bf:provisionActivity ;
+    kds:linkedClass bf:Instance .
+
+bc:ore-Preview a kds:PropertyExport ;
+    kds:destPropUri edm:preview ;
+    kds:destClassUri ore:Aggregation ;
+    kds:linkedRange schema:thumbnail ;
+    kds:linkedClass bf:Item .
+
+bc:edm-StandardizedRightsStatement a kds:PropertyExport ;
+    kds:destPropUri edm:rights ;
+    kds:destClassUri ore:Aggregation ;
+    kds:linkedRange bf:usageAndAccessPolicy ;
+    kds:linkedClass bf:Instance .
+
