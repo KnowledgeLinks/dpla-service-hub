@@ -50,6 +50,9 @@ service hub.
 To configure [dpla-service-hub][HOME], you'll need to add these minimum 
 variables in your `config.py` file.
 
+*   **SECRET_KEY** - Random string of characters for seeding Flask
+*   **BASE_URL** - Base URL to use for IRI minting, defaults to *http://bibcat.org/*
+
 ## Ingestion
 Right now, the way to ingest records into the triplestore is open an 
 interactive Python 3 session. Here is an example of

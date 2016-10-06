@@ -115,6 +115,14 @@ class Profile(object):
     
 
     def generate(self, entity_uri):
+        """Takes an entity URI and generates a DPLA JSON-LD Profile RDF graph. 
+
+        Args:
+            entity_uri(str|URIRef): Entity URI
+
+        Returns:
+            rdflib.ConjectiveGraph
+        """
         graph = new_graph()
         if isinstance(entity_uri, rdflib.URIRef):
             entity_iri = entity_uri
