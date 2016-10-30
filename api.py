@@ -3,21 +3,29 @@ __author__ = "Jeremy Nelson, Mike Stabile"
 
 import click
 import json
+import os
 import xml.etree.ElementTree as etree
 import requests
 import urllib.parse
+from dpla_map.feed import generate_maps
 from flask import abort, Flask, request, render_template, Response
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
 
-with open("VERSION") as fo:
+PROJECT_BASE =  os.path.abspath(os.path.dirname(__file__))
+
+with open(os.path.join(PROJECT_BASE, "VERSION")) as fo:
     __version__ = fo.read()   
 
 @app.route("/")
 def home():
     return "KnowledgeLink.io's DPLA Service Hub Version {}".format(__version__)
 
+
+@app.route("/map/v4")
+def map():
+    return generate_maps()
 
 @app.route("/oai")
 def oai_switcher():
