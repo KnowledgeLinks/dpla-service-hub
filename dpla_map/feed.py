@@ -98,6 +98,16 @@ class Profile(object):
         graph.add((source_resource_iri, 
                    NS_MGR.rdf.type, 
                    NS_MGR.dpla.SourceResource))
+        sparql = GET_RULES.format(NS_MGR.dpla.SourceResource)
+        print(sparql)
+        for row in self.rules.query(sparql):
+            destPropUri, linkedRange, linkedClass = row
+            if isinstance(linkedRange, rdflib.BNode):
+                continue
+            self.__populate__(entity=source_resource_iri,
+                              graph=graph,
+                              linkedRange=linkedRange,
+                              linkedClass=linkedClass)
         return source_resource_iri
 
     def __web_resource__(self, entity_iri, graph):
