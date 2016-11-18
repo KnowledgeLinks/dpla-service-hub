@@ -1,0 +1,74 @@
+@prefix acl: <http://www.w3.org/ns/auth/acl#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix kds: <http://knowledgelinks.io/ns/data-structures/> .
+@prefix kdr: <http://knowledgelinks.io/ns/data-resources/> .
+@prefix obi: <https://w3id.org/openbadges#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+
+kdr:Application a kds:Application;
+	kds:applicationSecurity [
+		acl:mode kds:SuperUser;
+		acl:agent kdr:sysadmin-sg
+	];
+	kds:applicationSecurity [
+		acl:mode acl:Read, acl:Write, acl:Control;
+		acl:agent kdr:admin-sg
+	];
+	kds:applicationSecurity [
+		acl:mode acl:Read, acl:Append;
+		acl:agent kdr:user-sg
+	];
+	kds:formDefault [
+		kds:fieldCss "form-control";
+		kds:rowCss "appFormRowCss";
+		kds:formCss "appFormFormCss"
+	];
+	kds:dataFormats [
+		kds:pythonDateFormat "%m/%d/%Y";
+		kds:javascriptDateFormat "mm/dd/yyyy";
+		kds:pythonDateTimeFormat "%Y-%m-%dT%H:%M:%SZ"
+	];
+	kds:appNameSpace [
+		kds:prefix "rdf";
+		kds:nameSpaceUri "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	];
+	kds:appNameSpace [
+		kds:prefix "acl";
+		kds:nameSpaceUri "http://www.w3.org/ns/auth/acl#"
+	]; 
+	kds:appNameSpace [
+		kds:prefix "xsd";
+		kds:nameSpaceUri "http://www.w3.org/2001/XMLSchema#"
+	]; 
+	kds:appNameSpace [
+		kds:prefix "vcard";
+		kds:nameSpaceUri "http://www.w3.org/2006/vcard/ns#"
+	]; 
+	kds:appNameSpace [
+		kds:prefix "schema";
+		kds:nameSpaceUri "http://schema.org/"
+	]; 
+	kds:appNameSpace [
+		kds:prefix "kds";
+		kds:nameSpaceUri "http://knowledgelinks.io/ns/data-structures/"
+	]; 
+	kds:appNameSpace [
+		kds:prefix "kdr";
+		kds:nameSpaceUri "http://knowledgelinks.io/ns/data-resources/"
+	]; 
+	kds:appNameSpace [
+		kds:prefix "foaf";
+		kds:nameSpaceUri "http://xmlns.com/foaf/0.1/"
+	]; 
+	kds:appNameSpace [
+		kds:prefix "rdfs";
+		kds:nameSpaceUri "http://www.w3.org/2000/01/rdf-schema#"
+	]; 
+	kds:saveLocation "triplestore";
+	kds:subjectPattern "!--baseUrl,/,ns,/,!--classPrefix,/,!--className,/,!--uuid";
+	kds:frameworkDocUrl "http://knowledgelinks.io/products/rdfframework" .
+

@@ -35,7 +35,8 @@ DEFAULT_RDF_NS = {
     "dc": "http://purl.org/dc/elements/1.1/",
     "dbo": "http://dbpedia.org/ontology/",
     "dbp": "http://dbpedia.org/property/",
-    "dbr": "http://dbpedia.org/resource/"
+    "dbr": "http://dbpedia.org/resource/",
+    "m21": "<http://knowledgelinks.io/ns/marc21/>"
 }
 # this is the graph name where application definitions are stored
 RDF_DEFINITION_GRAPH = "<http://knowledgelinks.io/ns/application-framework/>"

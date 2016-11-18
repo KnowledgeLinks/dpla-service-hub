@@ -10,7 +10,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix relators: <http://id.loc.gov/vocabulary/relators/> .
 @prefix dcr: <http://knowledgelinks.io/ns/dc/> .
-@prefix loc: <http://id.loc.gov/> .
 @prefix schema: <http://schema.org/> .
 
 bc:bf-Organization a kds:PropertyLinker;
