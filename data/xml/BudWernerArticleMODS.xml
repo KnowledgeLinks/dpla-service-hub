@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<mods xmlns="http://www.loc.gov/mods/v3" xmlns:marmot="http://marmot.org/local_mods_extension" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <titleInfo>
+    <title>Scrimshaw</title>
+    <subTitle>Art on Ivory</subTitle>
+  </titleInfo>
+  <mods:originInfo xmlns:mods="http://www.loc.gov/mods/v3">
+    <mods:dateIssued></mods:dateIssued>
+  </mods:originInfo>
+  <mods:subject xmlns:mods="http://www.loc.gov/mods/v3" authority="lcsh">
+    <mods:topic>Scrimshaws.</mods:topic>
+  </mods:subject>
+  <mods:subject xmlns:mods="http://www.loc.gov/mods/v3" authority="lcsh">
+    <mods:topic>Ivory carving.</mods:topic>
+  </mods:subject>
+  <mods:subject xmlns:mods="http://www.loc.gov/mods/v3" authority="lcsh">
+    <mods:topic>Folk art.</mods:topic>
+  </mods:subject>
+  <mods:subject xmlns:mods="http://www.loc.gov/mods/v3" authority="lcsh">
+    <mods:topic>Whaling -- United States -- History.</mods:topic>
+  </mods:subject>
+  <mods:abstract xmlns:mods="http://www.loc.gov/mods/v3">Bill Higbee is interviewed about scrimshaw, the whaler folk art of carving ivory or bone.</mods:abstract>
+  <language>
+    <languageTerm authority="iso639-2b" type="code">English</languageTerm>
+  </language>
+  <mods:physicalDescription xmlns:mods="http://www.loc.gov/mods/v3">
+    <mods:extent>pages 13-17</mods:extent>
+  </mods:physicalDescription>
+  <mods:accessCondition xmlns:mods="http://www.loc.gov/mods/v3">
+    <marmot:typeOfStatement>local</marmot:typeOfStatement>
+    <marmot:rightsHolder>
+      <marmot:entityPid>organization:14</marmot:entityPid>
+      <marmot:entityTitle>Tread of Pioneers Museum</marmot:entityTitle>
+    </marmot:rightsHolder>
+    <marmot:rightsStatement>LEGAL RELEASE FOR ORAL HISTORIES RELEASE OF TAPES OF ORAL HISTORY PROJECT INTERVIEW TO THE  TREAD OF PIONEERS MUSEUM  Date of Recording Approx. 1975-1987  I,Bill McKelvie, do hereby grant to the Tread of Pioneers Museum copyright to all materials related to the oral history interviews that I oversaw as part of the Steamboat Springs High School&#x2019;s magazine and oral history project, Three Wire Winter. It is agreed that access to the tape recording(s) and edited transcript shall be available to qualified researchers under library use policy. I authorize the museum to edit, publish, and license the use of these oral history memoirs in any manner that the museum considers appropriate, and I waive claim to royalties that may be received as a consequence thereof by the museum. Description of material: Taper recording(s) and transcript resulting from approximately 230 oral history session(s) conducted approximately between 1975-1987.  -------------------------------------------------- DEED OF GIFT  Name of Signer: Bill McKelvie (Steamboat Springs High School teacher in charge of the class and project)  (referred to as "Grantor" whether one or more): Preferred name or language for the object donation credit in exhibit and collection files:  Three Wire Winter Oral History and Magazine Project  Mailing address: Bill McKelvie PO Box 770664 Steamboat Springs, CO 80477 Telephone: 970-879-2854  Description of the Gift (the "Property") --Three Wire Winter Oral History and Magazine Project materials including (but not limited to) -----Oral history cassette tapes (approximately 230 interviews/tapes) -----Full collection of magazines, 24 total issues, two sets -----Support materials including (but not limited to) student notes, correspondence, curriculum notes, and a class scrapbook -----Photographs and slides taken by students.   Grantor, being the sole legal owner(s) of the Property, does irrevocably and unconditionally give and convey to the Tread of Pioneers Historical Commission, a Colorado nonprofit corporation ("Grantee"), its successors and assigns, for its sole use and benefit without restriction as to use or disposition, the Property together with all rights, copyrights, and interests in or related to the Property.  The Grantor for himself/herself, his/her heirs and personal representatives, does covenant and agree with the Grantee, its successors and assigns that at the time of the execution of this instrument he/she is the sole owner of the Property and has full power and lawful authority to give and convey the same in the manner and form provided under this instrument and the Property is free and clear from all other grants, liens, taxes, assessments, encumbrances and restriction of whatever kind or nature.  I(we) have no objections to my (our) name(s) appearing as donor(s) in connection with the Property in Museum records, publication, and other descriptions. Grantor acknowledges that by means of this instrument, Grantor relinquishes all control over the Property and that it may be used, stored, displayed, reproduced and dealt with in any manner that the Grantee may determine to be appropriate.</marmot:rightsStatement>
+    <marmot:rightsEffectiveDate>2015-01-20</marmot:rightsEffectiveDate>
+    <marmot:rightsExpirationDate></marmot:rightsExpirationDate>
+    <marmot:rightsLanguage>English</marmot:rightsLanguage>
+    <marmot:limitationsNotes></marmot:limitationsNotes>
+    <marmot:rightsCreator>
+      <marmot:entityPid>organization:14</marmot:entityPid>
+      <marmot:entityTitle>Tread of Pioneers Museum</marmot:entityTitle>
+    </marmot:rightsCreator>
+  </mods:accessCondition>
+  <extension>
+    <marmot:marmotLocal>
+      <marmot:hasCreator role="Author">
+        <marmot:entityPid>person:6280</marmot:entityPid>
+        <marmot:entityTitle>Kathy Landon</marmot:entityTitle>
+      </marmot:hasCreator>
+      <marmot:relatedPersonOrg>
+        <marmot:role></marmot:role>
+        <marmot:entityPid></marmot:entityPid>
+        <marmot:entityTitle></marmot:entityTitle>
+      </marmot:relatedPersonOrg>
+      <marmot:relatedPlace>
+        <marmot:significance></marmot:significance>
+        <marmot:entityPlace>
+          <marmot:entityPid></marmot:entityPid>
+          <marmot:entityTitle></marmot:entityTitle>
+        </marmot:entityPlace>
+        <marmot:generalPlace>
+          <marmot:latitude></marmot:latitude>
+          <marmot:longitude></marmot:longitude>
+          <marmot:addressStreetNumber></marmot:addressStreetNumber>
+          <marmot:addressStreet></marmot:addressStreet>
+          <marmot:address2></marmot:address2>
+          <marmot:addressCity></marmot:addressCity>
+          <marmot:addressCounty></marmot:addressCounty>
+          <marmot:addressState></marmot:addressState>
+          <marmot:addressZipCode></marmot:addressZipCode>
+          <marmot:addressCountry>USA</marmot:addressCountry>
+          <marmot:addressOtherRegion>
+            <marmot:addressOtherRegion></marmot:addressOtherRegion>
+          </marmot:addressOtherRegion>
+        </marmot:generalPlace>
+      </marmot:relatedPlace>
+      <marmot:picturedEntity>
+        <marmot:entityPid>person:6279</marmot:entityPid>
+        <marmot:entityTitle>Bill Higbee</marmot:entityTitle>
+      </marmot:picturedEntity>
+      <marmot:describedEntity>
+        <marmot:entityPid>person:6279</marmot:entityPid>
+        <marmot:entityTitle>Bill Higbee</marmot:entityTitle>
+      </marmot:describedEntity>
+      <marmot:relatedObject type="interview">
+        <marmot:objectPid>steamboatlibrary:329</marmot:objectPid>
+        <marmot:objectTitle>Issue #01, Winter 1976 - Bill Higbee Interview</marmot:objectTitle>
+        <marmot:objectRelationshipNote></marmot:objectRelationshipNote>
+      </marmot:relatedObject>
+      <marmot:hasTranscription>
+        <marmot:transcriptionLocation></marmot:transcriptionLocation>
+        <marmot:transcriptionLanguage>English</marmot:transcriptionLanguage>
+        <marmot:transcriptionText></marmot:transcriptionText>
+      </marmot:hasTranscription>
+      <marmot:externalLink type="relatedPika">
+        <marmot:link>http://steamboatlibrary.marmot.org/GroupedWork/7e4d0db4-7bff-8097-07f0-e35e8fde5a5d</marmot:link>
+        <marmot:linkText>Book: "Scrimshaw techniques : with gallery of contemporary artists"</marmot:linkText>
+      </marmot:externalLink>
+      <marmot:externalLink type="wikipedia">
+        <marmot:link>https://en.wikipedia.org/wiki/Scrimshaw</marmot:link>
+        <marmot:linkText>Featured in Wikipedia</marmot:linkText>
+      </marmot:externalLink>
+      <marmot:externalLink type="">
+        <marmot:link></marmot:link>
+        <marmot:linkText></marmot:linkText>
+      </marmot:externalLink>
+      <marmot:pikaOptions>
+        <marmot:includeInPika>yes</marmot:includeInPika>
+        <marmot:showInSearchResults>yes</marmot:showInSearchResults>
+      </marmot:pikaOptions>
+    <marmot:hasCreator role="author"><marmot:entityPid>person:6281</marmot:entityPid><marmot:entityTitle>Tony Borland</marmot:entityTitle></marmot:hasCreator><marmot:hasCreator role="author"><marmot:entityPid>person:6282</marmot:entityPid><marmot:entityTitle>Billy Ward</marmot:entityTitle></marmot:hasCreator><marmot:hasCreator role=""><marmot:entityPid></marmot:entityPid><marmot:entityTitle></marmot:entityTitle></marmot:hasCreator><marmot:picturedEntity><marmot:entityPid></marmot:entityPid><marmot:entityTitle></marmot:entityTitle></marmot:picturedEntity><marmot:relatedObject type=""><marmot:objectPid></marmot:objectPid><marmot:objectTitle></marmot:objectTitle><marmot:objectRelationshipNote></marmot:objectRelationshipNote></marmot:relatedObject><marmot:describedEntity><marmot:entityPid></marmot:entityPid><marmot:entityTitle></marmot:entityTitle></marmot:describedEntity></marmot:marmotLocal>
+  </extension>
+<mods:subject xmlns:mods="http://www.loc.gov/mods/v3" authority="lcsh"><mods:topic>Whalers (Persons)</mods:topic></mods:subject><mods:subject xmlns:mods="http://www.loc.gov/mods/v3" authority="lcsh"><mods:topic></mods:topic></mods:subject><mods:genre xmlns:mods="http://www.loc.gov/mods/v3">Article</mods:genre></mods>

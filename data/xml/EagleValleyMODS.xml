@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<mods xmlns="http://www.loc.gov/mods/v3" xmlns:marmot="http://marmot.org/local_mods_extension" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <genre>Image</genre>
+  <titleInfo>
+    <title>4-H picnic</title>
+    <subTitle>4-H picnic, Red Cliff  1965</subTitle>
+  </titleInfo>
+  <part>1</part>
+  <abstract>Participants in a 4-H picnic over Cemetery Hill in Red Cliff, Colorado, 1965.
+Back row, from left: Wilma Medina, ----, ----, ----, ----, Christine Beck (Banicki) Mary Lou Albert, Patricia Beck (Rowe)
+Blonde standing in middle : Sheila Warren
+Sandra Albert (Rose) squatting
+Johanna Beck, standing in front of Patricia Beck (Rowe)
+When Congress passed the Smith-Lever Act in 1914 and created the Cooperative Extension System at USDA, it included work of various boys' and girls' clubs involved with agriculture, home economics and related subjects, which effectively nationalized the 4-H organization. By 1924, these clubs became organized as 4-H clubs, and the clover emblem was adopted.
+The Cooperative Extension System is a unique partnership of the National Institute of Food and Agriculture (NIFA) within the U.S. Department of Agriculture (USDA), the 109 land-grant universities (in every state and territory) and more than 3,000 county offices.
+As a publicly funded, non-formal collaborative national educational network, Cooperative Extension combines the expertise and resources of federal, state, and local governments. Cooperative Extension is designed to meet the need for research, knowledge and educational programs that enable people to make practical decisions. --www.4-H.org</abstract>
+  <subject authority="local">
+    <topic>Children</topic>
+  </subject>
+  <subject authority="local">
+    <topic>Organizations &amp; Clubs</topic>
+  </subject>
+  <subject authority="local">
+    <topic>Agriculture</topic>
+  </subject>
+  <subject authority="local">
+    <topic>Red Cliff, Colorado</topic>
+  </subject>
+  <subject authority="local">
+    <topic>Beck Family</topic>
+  </subject>
+  <subject authority="local">
+    <topic>Albert Family</topic>
+  </subject>
+  <subject authority="local">
+    <topic>Greenwood Cemetery, Red Cliff</topic>
+  </subject>
+  <subject authority="local">
+    <topic>Clubs</topic>
+  </subject>
+  <subject authority="local">
+    <topic>Agricultural Extension</topic>
+  </subject>
+  <subject authority="local">
+    <topic>4-H Clubs</topic>
+  </subject>
+  <subject authority="local">
+    <topic>Agriculture</topic>
+  </subject>
+  <originInfo>
+    <dateCreated point="start">1965</dateCreated>
+  </originInfo>
+  <recordInfo>
+    <recordOrigin>Jaci Spuhler</recordOrigin>
+    <recordCreationDate>2011-07-20</recordCreationDate>
+    <recordChangeDate>2011-07-20T13:39:13</recordChangeDate>
+    <recordChangeDate>2011-06-29</recordChangeDate>
+  </recordInfo>
+  <physicalDescription>
+    <extent>4.5 x 3 in.  Print, Photographic Original </extent>
+  </physicalDescription>
+  <physicalLocation>Angela Beck, Red Cliff, Colorado</physicalLocation>
+  <physicalLocation>Angela Beck Collection, EVLD</physicalLocation>
+  <shelfLocator></shelfLocator>
+  <notes>Angela Beck </notes>
+  <extension>
+    <marmot:marmotLocal>
+      <marmot:relatedPersonOrg>
+        <marmot:entityPid>person:3561</marmot:entityPid>
+        <marmot:entityTitle>Johanna Beck Perkins</marmot:entityTitle>
+      </marmot:relatedPersonOrg>
+      <marmot:relatedPersonOrg>
+        <marmot:entityPid>person:3560</marmot:entityPid>
+        <marmot:entityTitle>Christine Beck Banicki</marmot:entityTitle>
+      </marmot:relatedPersonOrg>
+      <marmot:relatedPersonOrg>
+        <marmot:entityPid>person:2946</marmot:entityPid>
+        <marmot:entityTitle>Patricia Beck Rowe</marmot:entityTitle>
+      </marmot:relatedPersonOrg>
+      <marmot:relatedPersonOrg>
+        <marmot:entityPid>person:2533</marmot:entityPid>
+        <marmot:entityTitle>Sandy Albert Rose</marmot:entityTitle>
+      </marmot:relatedPersonOrg>
+      <marmot:relatedPersonOrg>
+        <marmot:entityPid>person:2534</marmot:entityPid>
+        <marmot:entityTitle>Sheila Warren</marmot:entityTitle>
+      </marmot:relatedPersonOrg>
+      <marmot:relatedPlace>
+        <marmot:entityPlace>
+          <marmot:entityPid>evld:284</marmot:entityPid>
+          <marmot:entityTitle>Red Cliff, Colorado</marmot:entityTitle>
+        </marmot:entityPlace>
+      </marmot:relatedPlace>
+      <marmot:migratedIdentifier>2008.009.316</marmot:migratedIdentifier>
+      <marmot:migratedFileName>008\2008009316.JPG                                          </marmot:migratedFileName>
+    </marmot:marmotLocal>
+    <marmot:contextNotes/>
+    <marmot:relationshipNotes/>
+  </extension>
+</mods>

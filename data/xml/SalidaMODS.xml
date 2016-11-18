@@ -1,0 +1,246 @@
+<?xml version="1.0"?>
+<mods xmlns="http://www.loc.gov/mods/v3" xmlns:marmot="http://marmot.org/local_mods_extension" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <titleInfo>
+    <title>1935 Salida High School Football Champions</title>
+    <subTitle/>
+  </titleInfo>
+  <mods:identifier xmlns:mods="http://www.loc.gov/mods/v3">
+    <mods:identifier/>
+  </mods:identifier>
+  <mods:genre xmlns:mods="http://www.loc.gov/mods/v3">Image</mods:genre>
+  <mods:originInfo xmlns:mods="http://www.loc.gov/mods/v3">
+    <mods:dateCreated point="start" qualifier="">1935</mods:dateCreated>
+    <mods:dateCreated point="end" qualifier=""></mods:dateCreated>
+    <mods:dateIssued qualifier=""></mods:dateIssued>
+  </mods:originInfo>
+  <mods:subject xmlns:mods="http://www.loc.gov/mods/v3" authority="lcsh">
+    <mods:topic>Football -- Colorado -- Salida.</mods:topic>
+  </mods:subject>
+  <mods:subject xmlns:mods="http://www.loc.gov/mods/v3" authority="local">
+    <mods:topic/>
+  </mods:subject>
+  <mods:abstract xmlns:mods="http://www.loc.gov/mods/v3">Photograph of the Salida High School Football Champions for 1935.&#xD;
+Salida High School Collection.</mods:abstract>
+  <language>
+    <languageTerm authority="iso639-2b" type="code">English</languageTerm>
+  </language>
+  <mods:physicalDescription xmlns:mods="http://www.loc.gov/mods/v3">
+    <mods:extent>1 photograph</mods:extent>
+    <mods:note/>
+    <mods:form type=""></mods:form>
+  </mods:physicalDescription>
+  <mods:location xmlns:mods="http://www.loc.gov/mods/v3">
+    <mods:physicalLocation>
+      <mods:physicalLocation>Salida Regional Library</mods:physicalLocation>
+    </mods:physicalLocation>
+    <mods:shelfLocator>
+      <mods:shelfLocator/>
+    </mods:shelfLocator>
+  </mods:location>
+  <mods:note xmlns:mods="http://www.loc.gov/mods/v3"/>
+  <mods:accessCondition xmlns:mods="http://www.loc.gov/mods/v3">
+    <marmot:typeOfStatement>local</marmot:typeOfStatement>
+    <marmot:rightsHolder>
+      <marmot:entityPid>organization:159</marmot:entityPid>
+      <marmot:entityTitle>Salida Regional Library</marmot:entityTitle>
+    </marmot:rightsHolder>
+    <marmot:rightsHolder>
+      <marmot:entityPid/>
+      <marmot:entityTitle/>
+    </marmot:rightsHolder>
+    <marmot:rightsStatement>Salida Regional Library provides digital access to the Salida Archive for educational and research/scholarly purposes. Images may be downloaded and printed by individuals for personal use, research, or teaching purposes, or other &#x2018;fair use&#x2019; as defined by U.S. Copyright Law.</marmot:rightsStatement>
+    <marmot:rightsEffectiveDate>2016-04-28</marmot:rightsEffectiveDate>
+    <marmot:rightsExpirationDate/>
+    <marmot:rightsLanguage>English</marmot:rightsLanguage>
+    <marmot:limitationsNotes/>
+    <marmot:rightsCreator>
+      <marmot:entityPid>organization:159</marmot:entityPid>
+      <marmot:entityTitle>Salida Regional Library</marmot:entityTitle>
+    </marmot:rightsCreator>
+  </mods:accessCondition>
+  <mods:recordInfo xmlns:mods="http://www.loc.gov/mods/v3">
+    <mods:recordOrigin/>
+    <mods:recordCreationDate/>
+    <mods:recordChangeDate/>
+  </mods:recordInfo>
+  <extension>
+    <marmot:marmotLocal>
+      <marmot:academicResearch>
+        <marmot:academicResearchType>
+          <marmot:academicResearchType/>
+        </marmot:academicResearchType>
+        <marmot:academicResearchLevel/>
+        <marmot:relatedPersonOrg>
+          <marmot:role>supporting department</marmot:role>
+          <marmot:entityPid/>
+          <marmot:entityTitle/>
+        </marmot:relatedPersonOrg>
+        <marmot:peerReview>no</marmot:peerReview>
+        <marmot:publicationPresentationInfo>
+          <marmot:journalTitle/>
+          <marmot:journalVolumeNumber/>
+          <marmot:journalIssueNumber/>
+          <marmot:journalArticleNumber/>
+          <marmot:articleFirstPage/>
+          <marmot:articleLastPage/>
+          <marmot:conferenceName/>
+          <marmot:conferencePresentationDate/>
+        </marmot:publicationPresentationInfo>
+      </marmot:academicResearch>
+      <marmot:correspondence>
+        <marmot:includesStamp>no</marmot:includesStamp>
+        <marmot:relatedPlace>
+          <marmot:entityPlace>
+            <marmot:significance>postmarkLocation</marmot:significance>
+            <marmot:datePostmarked/>
+            <marmot:entityPid/>
+            <marmot:entityTitle/>
+          </marmot:entityPlace>
+        </marmot:relatedPlace>
+        <marmot:relatedPersonOrg>
+          <marmot:role>correspondence recipient</marmot:role>
+          <marmot:entityPid/>
+          <marmot:entityTitle/>
+        </marmot:relatedPersonOrg>
+        <marmot:postcardPublisherNumber/>
+      </marmot:correspondence>
+      <marmot:art>
+        <marmot:materialDescription/>
+        <marmot:material>
+          <marmot:materialTerm/>
+          <marmot:aatID/>
+        </marmot:material>
+        <marmot:stylePeriodSet>
+          <marmot:stylePeriodTerm/>
+          <marmot:aatID/>
+        </marmot:stylePeriodSet>
+        <marmot:techniqueSet>
+          <marmot:techniqueTerm/>
+          <marmot:aatID/>
+        </marmot:techniqueSet>
+        <marmot:measurementSet>
+          <marmot:measurementType/>
+          <marmot:measurementUnit/>
+          <marmot:measurementNumber/>
+        </marmot:measurementSet>
+        <marmot:artInstallation>
+          <marmot:installationDate/>
+          <marmot:removalDate/>
+          <marmot:entityPlace>
+            <marmot:entityPid/>
+            <marmot:entityTitle/>
+          </marmot:entityPlace>
+          <marmot:generalPlace>
+            <marmot:latitude/>
+            <marmot:longitude/>
+          </marmot:generalPlace>
+        </marmot:artInstallation>
+      </marmot:art>
+      <marmot:citationNotes/>
+      <marmot:hasCreator role="">
+        <marmot:entityPid/>
+        <marmot:entityTitle/>
+      </marmot:hasCreator>
+      <marmot:relatedPersonOrg>
+        <marmot:role>acknowledgement</marmot:role>
+        <marmot:entityPid>organization:863</marmot:entityPid>
+        <marmot:entityTitle>Salida High School (Salida, Colo.)</marmot:entityTitle>
+      </marmot:relatedPersonOrg>
+      <marmot:relatedPersonOrg>
+        <marmot:role/>
+        <marmot:entityPid/>
+        <marmot:entityTitle/>
+      </marmot:relatedPersonOrg>
+      <marmot:picturedEntity>
+        <marmot:entityPid/>
+        <marmot:entityTitle/>
+      </marmot:picturedEntity>
+      <marmot:describedEntity>
+        <marmot:entityPid/>
+        <marmot:entityTitle/>
+      </marmot:describedEntity>
+      <marmot:relatedPlace>
+        <marmot:significance/>
+        <marmot:entityPlace>
+          <marmot:entityPid>place:320</marmot:entityPid>
+          <marmot:entityTitle>Salida, Colorado</marmot:entityTitle>
+        </marmot:entityPlace>
+        <marmot:generalPlace>
+          <marmot:latitude/>
+          <marmot:longitude/>
+          <marmot:addressStreetNumber/>
+          <marmot:addressStreet/>
+          <marmot:address2/>
+          <marmot:addressCity/>
+          <marmot:addressCounty/>
+          <marmot:addressState/>
+          <marmot:addressZipCode/>
+          <marmot:addressCountry>USA</marmot:addressCountry>
+          <marmot:addressOtherRegion>
+            <marmot:addressOtherRegion/>
+          </marmot:addressOtherRegion>
+        </marmot:generalPlace>
+      </marmot:relatedPlace>
+      <marmot:relatedPlace>
+        <marmot:significance/>
+        <marmot:entityPlace>
+          <marmot:entityPid/>
+          <marmot:entityTitle/>
+        </marmot:entityPlace>
+        <marmot:generalPlace>
+          <marmot:latitude/>
+          <marmot:longitude/>
+          <marmot:addressStreetNumber/>
+          <marmot:addressStreet/>
+          <marmot:address2/>
+          <marmot:addressCity/>
+          <marmot:addressCounty/>
+          <marmot:addressState/>
+          <marmot:addressZipCode/>
+          <marmot:addressCountry/>
+          <marmot:addressOtherRegion>
+            <marmot:addressOtherRegion/>
+          </marmot:addressOtherRegion>
+        </marmot:generalPlace>
+      </marmot:relatedPlace>
+      <marmot:relatedEvent>
+        <marmot:entityPid/>
+        <marmot:entityTitle/>
+        <marmot:entityRelationshipNote/>
+      </marmot:relatedEvent>
+      <marmot:relatedEntity>
+        <marmot:entityPid/>
+        <marmot:entityTitle/>
+        <marmot:entityRelationshipNote/>
+      </marmot:relatedEntity>
+      <marmot:relatedObject type="">
+        <marmot:objectPid/>
+        <marmot:objectTitle/>
+        <marmot:objectRelationshipNote/>
+      </marmot:relatedObject>
+      <marmot:hasTranscription>
+        <marmot:transcriptionLocation/>
+        <marmot:transcriptionLanguage>English</marmot:transcriptionLanguage>
+        <marmot:transcriptionText/>
+      </marmot:hasTranscription>
+      <marmot:externalLink type="">
+        <marmot:link>http://salidaarchive.info/salida-centennial-photo-archive/</marmot:link>
+        <marmot:linkText>Salida Centennial Photo Archive</marmot:linkText>
+      </marmot:externalLink>
+      <marmot:externalLink type="">
+        <marmot:link/>
+        <marmot:linkText/>
+      </marmot:externalLink>
+      <marmot:contextNotes/>
+      <marmot:relationshipNotes/>
+      <marmot:migratedFileName/>
+      <marmot:migratedIdentifier>
+        <marmot:migratedIdentifier/>
+      </marmot:migratedIdentifier>
+      <marmot:pikaOptions>
+        <marmot:includeInPika>no</marmot:includeInPika>
+        <marmot:showInSearchResults>yes</marmot:showInSearchResults>
+      </marmot:pikaOptions>
+    </marmot:marmotLocal>
+  </extension>
+</mods>
