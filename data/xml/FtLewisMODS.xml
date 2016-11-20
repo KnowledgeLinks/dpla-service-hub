@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<mods xmlns="http://www.loc.gov/mods/v3" xmlns:marmot="http://marmot.org/local_mods_extension" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"><titleInfo>
+<title>A Bad Spill, Durango Fair and Roundup (CO)</title>
+</titleInfo>
+<mods:genre>postcard</mods:genre>
+<identifier>2002:01002<mods:identifier xmlns:mods="http://www.loc.gov/mods/v3"></mods:identifier></identifier>
+<identifier>2002:01002.0188<mods:identifier xmlns:mods="http://www.loc.gov/mods/v3"></mods:identifier></identifier>
+<originInfo>
+<dateCreated point="start" qualifier="">9/23/1919</dateCreated>
+<dateCreated point="end" qualifier=""></dateCreated><dateIssued qualifier=""></dateIssued></originInfo>
+<abstract>Photograph of three men racing on horseback, one of whom has fallen in front of his horse.</abstract>
+<subject authority="lcsh">
+<topic>Horse racing -- Postcards</topic>
+</subject>
+<subject authority="lcsh">
+<topic>Rodeos -- Postcards</topic>
+</subject>
+<language>
+<languageTerm authority="iso639-2b" type="code">English</languageTerm>
+</language>
+<physicalDescription>
+<extent>Postcard</extent>
+<form type="material">Postcard, black and white</form>
+</physicalDescription>
+<physicalLocation>1 188</physicalLocation>
+<extension>
+<marmot:marmotLocal>
+<marmot:correspondence>
+<marmot:postcardPublisherNumber></marmot:postcardPublisherNumber>
+<marmot:datePostmarked/><marmot:relatedPlace><marmot:entityPlace><marmot:significance>postmarkLocation</marmot:significance><marmot:entityPid></marmot:entityPid><marmot:entityTitle></marmot:entityTitle><marmot:significance>postmarkLocation</marmot:significance><marmot:significance>postmarkLocation</marmot:significance><marmot:datePostmarked/></marmot:entityPlace></marmot:relatedPlace><marmot:includesStamp>no</marmot:includesStamp><marmot:relatedPersonOrg><marmot:role>correspondence recipient</marmot:role><marmot:entityPid></marmot:entityPid><marmot:entityTitle></marmot:entityTitle><marmot:role>correspondence recipient</marmot:role><marmot:role>correspondence recipient</marmot:role></marmot:relatedPersonOrg></marmot:correspondence>
+<marmot:hasCreator role="photographer">
+<marmot:entityPid>person:5835</marmot:entityPid>
+<marmot:entityTitle>T. Rowland</marmot:entityTitle>
+</marmot:hasCreator>
+<marmot:relatedPersonOrg>
+<marmot:role>donor</marmot:role>
+<marmot:entityPid>person:5824</marmot:entityPid>
+<marmot:entityTitle>Nina Heald Webber</marmot:entityTitle>
+</marmot:relatedPersonOrg>
+<marmot:relatedPersonOrg>
+<marmot:role>owner</marmot:role>
+<marmot:entityPid>organization:24</marmot:entityPid>
+<marmot:entityTitle>Fort Lewis College Foundation</marmot:entityTitle>
+</marmot:relatedPersonOrg>
+<marmot:picturedEntity>
+<marmot:entityPid>place:298</marmot:entityPid>
+<marmot:entityTitle>Durango, Colorado</marmot:entityTitle>
+</marmot:picturedEntity>
+<marmot:pikaOptions>
+<marmot:includeInPika>yes</marmot:includeInPika>
+<marmot:showInSearchResults>yes</marmot:showInSearchResults>
+</marmot:pikaOptions>
+<marmot:hasTranscription><marmot:transcriptionLocation>Text</marmot:transcriptionLocation><marmot:transcriptionLanguage>English</marmot:transcriptionLanguage><marmot:transcriptionText>A bad spill&#xD;
+Durango Fair &amp; Roundup&#xD;
+9-23-19&#xD;
+(Rowland)</marmot:transcriptionText></marmot:hasTranscription><marmot:describedEntity><marmot:entityPid></marmot:entityPid><marmot:entityTitle>Durango County Fair</marmot:entityTitle></marmot:describedEntity><marmot:externalLink type=""><marmot:link></marmot:link><marmot:linkText></marmot:linkText></marmot:externalLink><marmot:migratedFileName></marmot:migratedFileName><marmot:migratedIdentifier><marmot:migratedIdentifier></marmot:migratedIdentifier></marmot:migratedIdentifier><marmot:entityWorkComplete>yes</marmot:entityWorkComplete></marmot:marmotLocal>
+</extension>
+<mods:accessCondition>
+<marmot:rightsStatement>The Center of Southwest Studies is not aware of any U.S. copyright or any other restrictions in the postcards in this collection.  However, some of the content may be protected by the U.S.  Copyright Law (Title 17, U.S.C.) and/or by the copyright or neighboring-rights laws of other nations.  Additionally, the reproduction of some materials may be restricted by privacy and/or publicity rights.</marmot:rightsStatement>
+<marmot:typeOfStatement>local</marmot:typeOfStatement><marmot:rightsHolder><marmot:entityPid></marmot:entityPid><marmot:entityTitle></marmot:entityTitle></marmot:rightsHolder><marmot:rightsEffectiveDate></marmot:rightsEffectiveDate><marmot:rightsExpirationDate></marmot:rightsExpirationDate><marmot:rightsLanguage>English</marmot:rightsLanguage><marmot:limitationsNotes></marmot:limitationsNotes><marmot:rightsCreator><marmot:entityPid></marmot:entityPid><marmot:entityTitle></marmot:entityTitle></marmot:rightsCreator></mods:accessCondition>
+<mods:location xmlns:mods="http://www.loc.gov/mods/v3"/><physicalLocation><mods:physicalLocation xmlns:mods="http://www.loc.gov/mods/v3"/></physicalLocation><mods:recordInfo xmlns:mods="http://www.loc.gov/mods/v3"><mods:recordOrigin></mods:recordOrigin><mods:recordCreationDate></mods:recordCreationDate><mods:recordChangeDate></mods:recordChangeDate></mods:recordInfo><physicalLocation><mods:physicalLocation xmlns:mods="http://www.loc.gov/mods/v3"/></physicalLocation><physicalLocation><mods:physicalLocation xmlns:mods="http://www.loc.gov/mods/v3"/></physicalLocation></mods>
