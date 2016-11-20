@@ -5,16 +5,36 @@ SECRET_KEY = "enter_a_secret_key_here"
 # URL used in generating IRIs
 BASE_URL = "http://bibcat.org/"
 
-# Database REST urls
 TRIPLESTORE_URL = "http://localhost:9999/blazegraph/sparql"
+# Database REST urls
+TRIPLESTORE = {
+    "url": "http://localhost:9999/blazegraph/sparql",
+    "ns_url":  "http://localhost:9999/blazegraph/namespace",
+    "vendor": "blazegraph",
+    "default_graph": "bd:nullGraph",
+    "default_ns": "kb"
+}
 REPOSITORY_URL = "http://localhost:8080/rest"
 ES_URL = "http://localhost:9200"
+
+# Triplestore Setup
+RDF_DEFINITIONS = {
+    # this is the graph name where application definitions are stored
+    "graph": "<http://knowledgelinks.io/ns/application-framework/>",
+    "method": "namespace",
+    "triplestore": "blazegraph",
+    "namespace": "rdf_defs"
+}
+# this is the graph name where application definitions are stored
+RDF_DEFINITION_GRAPH = "<http://knowledgelinks.io/ns/application-framework/>"
+
 # Dictionary of web accessibale datasets
 DATASET_URLS = {
     "loc_subjects_skos.nt.gz": "http://id.loc.gov/static/data/authoritiessubjects.nt.skos.gz",
     "marc_relatoes_nt": "http://id.loc.gov/static/data/vocabularyrelators.nt.zip",
     "bibframe_vocab_rdf": "http://id.loc.gov/ontologies/bibframe.rdf"
 }
+
 DEFAULT_RDF_NS = {
     "kds": "http://knowledgelinks.io/ns/data-structures/",
     "kdr": "http://knowledgelinks.io/ns/data-resources/",
@@ -38,13 +58,11 @@ DEFAULT_RDF_NS = {
     "dbr": "http://dbpedia.org/resource/",
     "m21": "<http://knowledgelinks.io/ns/marc21/>"
 }
-# this is the graph name where application definitions are stored
-RDF_DEFINITION_GRAPH = "<http://knowledgelinks.io/ns/application-framework/>"
-# this is the graph name where reference triples are stored
+
 RDF_REFERENCE_GRAPH = "<http://knowledgelinks.io/ns/bibframe/reference/>"
 RDF_LOC_SUBJECT_GRAPH = "<http://knowledgelinks.io/ns/bibframe/loc_subject/>"
 # The name used the site
-SITE_NAME = "BIBCAT 2.0"
+SITE_NAME = "DPLA-SERVICE-HUB"
 
 # Organzation information for the hosting org.
 ORGANIZATION = {
@@ -54,25 +72,4 @@ ORGANIZATION = {
 }
 
 # Default data to load at initial application creation
-FRAMEWORK_DEFAULT = [
-        {
-                # add a default user
-                "form_path" : "UserForm/NewForm",
-                "form_data" : {
-                        "emailaddr": "user@example.com",
-                        "givenname": "Firstname",
-                        "familyname": "Lastname",
-                        "username": "example_user",
-                        "password": "password"
-                }
-        },
-        {
-                # a a default organization
-                "form_path" : "organization/new",
-                "form_data" : {
-                        "website": ORGANIZATION['url'],
-                        "orgname": ORGANIZATION['name'],
-                        "itemDescription": ORGANIZATION['description']
-                }
-        }
-]
+FRAMEWORK_DEFAULT = []
