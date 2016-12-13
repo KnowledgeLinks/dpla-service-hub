@@ -1,0 +1,30 @@
+@prefix bc: <http://knowledgelinks.io/ns/bibcat/> .
+@prefix bf: <http://id.loc.gov/ontologies/bibframe/> .
+@prefix kds: <http://knowledgelinks.io/ns/data-structures/> .
+@prefix kdr: <http://knowledgelinks.io/ns/data-resources/> .
+@prefix modsr: <http://knowledgelinks.io/ns/mods/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pcdm: <http://pcdm.org/models#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix relators: <http://id.loc.gov/vocabulary/relators/> .
+@prefix dcr: <http://knowledgelinks.io/ns/dc/> .
+@prefix schema: <http://schema.org/> .
+@prefix marmot: <http://marmot.org/local_mods_extension> .
+
+bc:marmot-personTopic a kds:PropertyLinker;
+    kds:srcPropXpath "mods:extension/marmot:marmotLocal/marmot:relatedPersonOrg/marmot:entityTitle" ;
+    kds:destPropUri rdfs:label ;
+    kds:destClassUri bf:Person ;
+    kds:hasIndividualNodes "true";
+    kds:linkedRange bf:subject ;
+    kds:linkedClass bf:Instance .
+
+bc:marmot-geographicTopic a kds:PropertyLinker ;
+    kds:srcPropXpath "mods:extension/marmot:marmotLocal/marmot:relatedPlace/";
+    kds:destPropUri rdfs:label ;
+    kds:destClassUri bf:Place ;
+    kds:hasIndividualNodes "true";
+    kds:linkedRange bf:subject ;
+    kds:linkedClass bf:Instance .
