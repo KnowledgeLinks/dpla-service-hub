@@ -16,5 +16,17 @@ bc:bf-Organization a kds:PropertyLinker;
     kds:destPropUri [ bf:heldBy <https://www.cde.state.co.us/stateinfo> ] ;
     kds:destClassUri bf:Item .
 
+bc:bf-SubjectGeographic a kds:PropertyLinker;
+    kds:srcPropXpath "mods:subject/mods:geographicCode/.=n-us-co" ;
+    kds:destPropUri <http://www.geonames.org/5417618/colorado.html> .
+
+bc:mods-ClassificationCoDocs a kds:PropertyLinker;
+    kds:srcPropXpath "mods:classification"; 
+    kds:destPropUri rdf:value ;
+    kds:destClassUri bf:Identifier, bf:Codocs ;
+    kds:linkedRange bf:identifiedBy ;
+    kds:linkedClass bf:Instance .
+
+    
 <https://www.cde.state.co.us/stateinfo> a bf:Organization, schema:Library;
     rdfs:label "Colorado State Publications Library"@en .
