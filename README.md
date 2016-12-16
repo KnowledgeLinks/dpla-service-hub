@@ -80,7 +80,7 @@ along with a sample of Colorado College's MARC 21 records:
 ```python
 import pymarc
 import ingesters.marc as marc2bf
-marc_ingester = marc2bf.MARCIngester(custom=['cc-marc-bf-.ttl'])
+marc_ingester = marc2bf.MARCIngester(rules_ttl=['cc-marc-bf-.ttl'])
 with open("dpla-service-hub/tmp/cc-marc.mrc", "rb") as fo:
     reader = pymarc.MARCReader(fo, to_unicode=True)
 for record in reader:
@@ -93,7 +93,7 @@ for record in reader:
 import requests
 import xml.etree.ElementTree as etree
 import ingesters.mods as mods
-mods_ingester = mods.MODSIngester(mods_xml, custom=["cc-mods-bf.ttl"])
+mods_ingester = mods.MODSIngester(xml=mods_xml, rules_ttl=["cc-mods-bf.ttl"])
 ```
 
 Request the MODS XML datafile from a Colorado College's Islandora repository 
@@ -112,7 +112,7 @@ To test a random collection of Dublin Core RDF XML from Denver Public Library
 import pickle
 import pymarc
 import ingesters.dc as dc
-dc_ingester = dc.DCIngester(custom=['dpl-dc.ttl'])
+dc_ingester = dc.DCIngester(rules_ttlt st=['dpl-dc.ttl'])
 with open("dpla-service-hub/tmp/sample_recs.pickle", "rb") as fo:
     sample_recs = pickle.load(fo)
 for rdf_record in sample_recs:
@@ -121,7 +121,6 @@ for rdf_record in sample_recs:
 ```
 
 ### Dublin Core CSV
-
 
 ## Deploying
 

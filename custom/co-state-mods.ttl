@@ -27,6 +27,21 @@ bc:mods-ClassificationCoDocs a kds:PropertyLinker;
     kds:linkedRange bf:identifiedBy ;
     kds:linkedClass bf:Instance .
 
+bc:mods-eventplace a kds:PropertyLinker;
+    kds:srcPropXpath "mods:name[@type='conference']/mods:namePart";
+    kds:destPropUri [ a bf:Event ;
+        kds:destPropUri rdfs:label ;
+        kds:destClassUri bf:Event ] ;
+    kds:linkedRange bf:instanceOf ;
+    kds:linkedClass bf:Instance . 
     
+    
+
 <https://www.cde.state.co.us/stateinfo> a bf:Organization, schema:Library;
     rdfs:label "Colorado State Publications Library"@en .
+
+<https://coag.gov/> a bf:Organization;
+    rdfs:label "Colorado. Attorney-General's Office.",
+        "Office of the Attorney General"@en;
+    rdfs:prefLabel "Office of the Attorney General"@en .
+
