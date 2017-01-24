@@ -13,6 +13,26 @@
 @prefix schema: <http://schema.org/> .
 @prefix marmot: <http://marmot.org/local_mods_extension> .
 
+bc:bf-ItemIRITemplate a kds:IRIPattern ;
+    kds:srcPropXpath "mods:extension/marmot:marmotLocal/marmot:relatedObject/marmot:objectPid",
+        "mods:extension/marmot:marmotLocal/marmot:relatedPlace/marmot:entityPlace/marmot:entityPid" ;
+    kds:srcPropRegex "(\\w+:\\d+)";
+    kds:destClassUri bf:Item ;
+    kds:iriPattern "https://islandora.marmot.org/islandora/object/{0}" .
+
+bc:bf-itemHeldBy a kds:PropertyLinker;
+    kds:destPropUri [ bf:heldBy <http://marmot.org/> ] ;
+    kds:destClassUri bf:Item .
+
+
+bc:marmot-creator a kds:PropertyLinker;
+    kds:srcPropXpath "mods:extension/marmot:marmotLocal/marmot:hasCreator/marmot:entityTitle";
+    kds:destClassUri bf:Person;
+    kds:destPropUri rdfs:label;
+    kds:hasIndividualNodes "true" ;
+    kds:linkedRange relators:cre;
+    kds:linkedClass bf:Instance . 
+
 bc:marmot-personTopic a kds:PropertyLinker;
     kds:srcPropXpath "mods:extension/marmot:marmotLocal/marmot:relatedPersonOrg/marmot:entityTitle" ;
     kds:destPropUri rdfs:label ;
@@ -28,3 +48,7 @@ bc:marmot-geographicTopic a kds:PropertyLinker ;
     kds:hasIndividualNodes "true";
     kds:linkedRange bf:subject ;
     kds:linkedClass bf:Instance .
+
+
+<http://marmot.org/> a bf:Organization ;
+    rdfs:label "Marmot Library Network" .

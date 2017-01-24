@@ -4,41 +4,60 @@ __author__ = "Jeremy Nelson, Mike Stabile"
 import click
 import logging
 import os
+import rdflib
+import requests
 import sys
 
 PROJECT_BASE =  os.path.abspath(os.path.dirname(__file__))
 sys.path.append(PROJECT_BASE)
 
 logging.getLogger("rdfw.rdfframework").setLevel(logging.CRITICAL)
+logging.getLogger("passlib").setLevel(logging.CRITICAL)
 
 @click.group()
 def cli():
     pass
 
 @click.command()
+def add_batch():
+    click.echo("Running Add Batch")
+
+@click.command()
 @click.option('--ingest_type', 
     help='Ingester type',
     type=click.Choice(['dc', 'csv', 'mods', 'oai_pmh', 'ptfs'])) 
 @click.option('--profile', help='Profile RDF Turtle file')
-@click.option('--in_file',  help='Metadata Input File')
+@click.option('--item_iri', default=None, help="Optional IRI for Item")
+@click.option('--in_file',  default=None, help='Metadata Input File')
+@click.option('--in_url', default=None, help='Metadata Input URL')
 @click.option('--out_file', default=None, help='Saves output to RDF Turtle file')
-def add(profile, ingest_type, in_file, out_file):
+def add_record(profile, ingest_type, in_file, in_url, item_iri, out_file):
     """Takes a RDF ttl Rule file called a profile, a metadata input file,
     and either outputs to an RDF BIBFRAME turtle file or to the RDF triplestore
     defined in the application's configuration.
     """
-    click.echo("Running Add Records")
+    click.echo("Running Add Record")
     profile_path = os.path.abspath(os.path.join(PROJECT_BASE,
         os.path.join("custom", profile)))
     if not os.path.exists(profile_path):
         raise ValueError("Profile RDF Rule {} not found".format(
             profile_path))
-    if not os.path.exists(in_file):
-        raise ValueError("Input file path {} not found".format(
-            in_file))
+    if in_file is None and in_url is None:
+        raise ValueError("Profile must have either an URL or local file")
+    if in_file is not None:
+        if not os.path.exists(in_file):
+            raise ValueError("Input file path {} not found".format(
+                in_file))
+        else:
+            with open(in_file, 'rb') as fo:
+                raw_src = fo.read().decode()
+    elif in_url is not None:
+        result = requests.get(in_url)
+        result.encoding = 'utf-8'
+        if result.status_code < 399:
+            raw_src = result.text
     else:
-        with open(in_file, 'rb') as fo:
-            raw_src = fo.read() 
+        raise ValueError("Missing input file or url")
     if ingest_type.startswith("csv"):
         from bibcat.ingesters import csv
         ingester = csv.RowIngester(rules_ttl=profile,
@@ -50,26 +69,25 @@ def add(profile, ingest_type, in_file, out_file):
     elif ingest_type.startswith("mods"):
         from bibcat.ingesters import mods
         ingester = mods.MODSIngester(rules_ttl=profile,
-                       source=raw_src.decode())
+                       source=raw_src)
+        # Add Marmot NS
+        ingester.xpath_ns["marmot"] = "http://marmot.org/local_mods_extension"
     elif ingest_type.startswith("ptfs"):
         from bibcat.ingesters import ptfs
         ingester = ptfs.PTFSIngester(rules_ttl=profile,
                        source=raw_src)
     else:
         raise ValueError("Ingester Type {} not found".format(ingest_type))
-    ingester.transform()
+    if item_iri is not None:
+        item_iri = rdflib.URIRef(item_iri)
+    ingester.transform(item_uri=item_iri)
     if out_file is not None:
         with open(out_file, 'wb+') as fo:
             fo.write(ingester.graph.serialize(format='turtle'))
     click.echo("Finished Add Records")
-    
-    
 
-
-    
-    
-
-cli.add_command(add)
+cli.add_command(add_batch)
+cli.add_command(add_record)
 
 if __name__ == '__main__':
     cli()

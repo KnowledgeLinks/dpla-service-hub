@@ -1,0 +1,25 @@
+bibcat:
+    build: .
+    ports:
+        - "5000:5000"
+    links:
+     - semanticServer:semanticServer
+
+semanticServer:
+    image: jermnelson/semantic-server-core:dev
+    ports:
+     - "8080:8080"
+     - "9999:9999"
+    volumes:
+     - /opt/bibcat_repository/fedora-data:/usr/share/fedora-data
+     - /opt/bibcat_triplestore:/usr/share/blazegraph
+     - $HOME/local_data:/local_data
+
+web:
+    build: .
+    dockerfile: DockerNginx
+    links:
+     - bibcat:bibcat
+    ports:
+     - "80:80"
+     - "443:443"

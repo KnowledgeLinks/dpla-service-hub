@@ -11,16 +11,26 @@
 @prefix relators: <http://id.loc.gov/vocabulary/relators/> .
 @prefix dcr: <http://knowledgelinks.io/ns/dc/> .
 @prefix schema: <http://schema.org/> .
+@prefix marmot: <http://marmot.org/local_mods_extension> .
 
 bc:bf-Organization a kds:PropertyLinker;
-    kds:destPropUri [ bf:heldBy <https://coloradocollege.edu/library> ] ;
+    kds:destPropUri [ bf:heldBy <http://www.uwyo.edu/> ] ;
     kds:destClassUri bf:Item .
 
-bc:bf-ItemIRITemplate a kds:IRIPattern ;
-    kds:srcPropXpath "mods:location/mods:url" ;
-    kds:srcPropRegex "/(\\w+:\\d+)";
-    kds:destClassUri bf:Item ;
-    kds:iriPattern "http://digitalcc.coloradocollege.edu/pid{0}" . 
+bc:mods-originalLocation a kds:PropertyLinker;
+    kds:destPropXpath "mods:note[@type='original location']" ;
+    kds:destClassUri bf:Note ;
+    kds:linkedRange bf:note ;
+    kds:hasIndividualNodes "true" ;
+    kds:destAdditionalPropUris [ bf:noteType "original location"@en ];
+    kds:linkedClass bf:Instance .
 
-<https://coloradocollege.edu/library> a bf:Organization ;
-    rdfs:label "Tutt Library, Colorado College" .
+bc:mods-volume a kds:PropertyLinker;
+    kds:destPropXpath "mods:part/mods:detail[@type='volume']/mods:number";
+    kds:destClassUri bf:Unit ;
+    kds:destPropUri rdf:value ;
+    kds:linkedRange bf:unit ;
+    kds:linkedClass bf:Instance .
+
+<http://www.uwyo.edu/> a bf:Organization;
+    rdfs:label "University of Wyoming" .
