@@ -15,3 +15,7 @@
 bc:bf-Organization a kds:PropertyLinker;
     kds:destPropUri [ bf:heldBy <http://library.wyo.gov/> ] ;
     kds:destClassUri bf:Item .
+
+<https://wgfd.wyo.gov/> a bf:Organization, bf:Agent;
+    rdfs:label "Game and Fish Department" .
+    

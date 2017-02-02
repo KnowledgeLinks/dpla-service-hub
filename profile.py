@@ -2,6 +2,7 @@
 __author__ = "Jeremy Nelson, Mike Stabile"
 
 import click
+import csv
 import datetime
 import logging
 import os
@@ -38,13 +39,13 @@ def iterate_dc_xml(**kwargs):
             ingester.transform(etree.tostring(elem))
             shard_graph += ingester.graph
             if not count%10 and count > 0:
-                click.echo(".")
+                click.echo(".", nl=False)
                 #! DEBUG code
                 with open(os.path.join(output_dir, "dpl-dc-test.ttl"), "wb+") as fo:
                     fo.write(shard_graph.serialize(format='turtle'))
                 break
             if not count%100:
-                click.echo(count)
+                click.echo(count, nl=False)
             if shard_size is not None and shard_size > 0 and not count%shard_size:
                 with open(os.path.join(output_dir, shard_name), 'wb+') as fo:
                     fo.write(shard_graph.serialize(format='turtle'))
@@ -57,6 +58,10 @@ def iterate_dc_xml(**kwargs):
         (end-start).seconds / 60.0,
         count))
 
+
+def oai_handler(**kwargs):
+    from bibcat.ingesters.oai_pmh import OAIPMHIngester
+    ingester = OAIPMHIngester(oai_pmh=kwargs.get('url'))
 
 @click.group()
 def cli():
@@ -94,9 +99,22 @@ def add_batch(ingest_type,
         raise ValueError("Profile RDF Rule {} not found".format(
             profile_path))
     if ingest_type.startswith("csv"):
-        from bibcat.ingesters import csv
-        ingester = csv.RowIngester(rules_ttl=profile,
-            source=raw_src)
+        from bibcat.ingesters import csv as csv_ingester
+        from bibcat.ingesters.ingester import new_graph
+        if in_file is not None:
+            pass
+        reader = csv.DictReader(open(in_file, errors='ignore'))
+        ingester = csv_ingester.RowIngester(rules_ttl=profile)
+        all_graph = new_graph()
+        for i, row in enumerate(reader):
+            ingester.transform(row)
+            all_graph += ingester.graph
+            if not i%10 and i > 0:
+                click.echo(".", nl=False)
+            if not i%100:
+                click.echo(i, nl=False)
+        with open(os.path.join(output_dir, 'dpla-csv.ttl'), 'wb+') as fo:
+            fo.write(all_graph.serialize(format='turtle'))
     elif ingest_type.startswith("dc"):
         from bibcat.ingesters import dc
         ingester = dc.DCIngester(rules_ttl=profile)
@@ -105,12 +123,14 @@ def add_batch(ingest_type,
                 ingester=ingester,
                 shard_size=shard_size,
                 output_dir=output_dir)
+    elif ingest_type.startswith("oai_pmh"):
+        
 
 @click.command()
+@click.argument('profile')
 @click.option('--ingest_type', 
     help='Ingester type',
     type=click.Choice(['dc', 'csv', 'mods', 'oai_pmh', 'ptfs'])) 
-@click.option('--profile', help='Profile RDF Turtle file')
 @click.option('--item_iri', default=None, help="Optional IRI for Item")
 @click.option('--in_file',  default=None, help='Metadata Input File')
 @click.option('--at_url', default=None, help='Metadata Input URL')
@@ -126,7 +146,7 @@ def add_record(profile, ingest_type, in_file, at_url, item_iri, out_file):
     if not os.path.exists(profile_path):
         raise ValueError("Profile RDF Rule {} not found".format(
             profile_path))
-    if in_file is None and in_url is None:
+    if in_file is None and at_url is None:
         raise ValueError("Profile must have either an URL or local file")
     if in_file is not None:
         if not os.path.exists(in_file):
@@ -134,7 +154,10 @@ def add_record(profile, ingest_type, in_file, at_url, item_iri, out_file):
                 in_file))
         else:
             with open(in_file, 'rb') as fo:
-                raw_src = fo.read().decode()
+                try: # Try utf-8 default encoding
+                    raw_src = fo.read().decode()
+                except UnicodeDecodeError:
+                    raw_src = fo.read().decode('utf-16')
     elif at_url is not None:
         result = requests.get(at_url)
         result.encoding = 'utf-8'
