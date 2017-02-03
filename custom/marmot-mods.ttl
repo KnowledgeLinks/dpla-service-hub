@@ -52,3 +52,9 @@ bc:marmot-geographicTopic a kds:PropertyLinker ;
 
 <http://marmot.org/> a bf:Organization ;
     rdfs:label "Marmot Library Network" .
+
+bc:repositoryInfo a kdr:SystemInfo;
+    kdr:systemType <https://islandora.ca/> ;
+    kdr:baseURL <https://islandora.marmot.org/> ;
+    kdr:objectTemplate "/islandora/objects/{0}" .
+    

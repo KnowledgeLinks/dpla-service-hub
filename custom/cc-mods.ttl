@@ -24,3 +24,9 @@ bc:bf-ItemIRITemplate a kds:IRIPattern ;
 
 <https://coloradocollege.edu/library> a bf:Organization ;
     rdfs:label "Tutt Library, Colorado College" .
+
+bc:repositoryInfo a kdr:SystemInfo;
+    kdr:systemType <https://islandora.ca/> ;
+    kdr:baseURL <https://digitalccbeta.coloradocollege.edu/> ;
+    kdr:objectTemplate "/islandora/objects/{0}" .
+    
