@@ -124,13 +124,14 @@ def add_batch(ingest_type,
                 shard_size=shard_size,
                 output_dir=output_dir)
     elif ingest_type.startswith("oai_pmh"):
+        pass
         
 
 @click.command()
 @click.argument('profile')
 @click.option('--ingest_type', 
     help='Ingester type',
-    type=click.Choice(['dc', 'csv', 'mods', 'oai_pmh', 'ptfs'])) 
+    type=click.Choice(['dc', 'csv', 'mods', 'ptfs'])) 
 @click.option('--item_iri', default=None, help="Optional IRI for Item")
 @click.option('--in_file',  default=None, help='Metadata Input File')
 @click.option('--at_url', default=None, help='Metadata Input URL')
@@ -184,6 +185,8 @@ def add_record(profile, ingest_type, in_file, at_url, item_iri, out_file):
     if out_file is not None:
         with open(out_file, 'wb+') as fo:
             fo.write(ingester.graph.serialize(format='turtle'))
+    else:
+        ingester.add_to_triplestore()
     click.echo("Finished Add Records")
 
 cli.add_command(add_batch)
