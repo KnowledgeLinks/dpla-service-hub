@@ -5,9 +5,10 @@ MAINTAINER Jeremy Nelson <jermnelson@gmail.com>
 ENV HOME /opt/dpla-service-hub
 ENV REPO https://github.com/KnowledgeLinks/dpla-service-hub.git
 
-RUN apt-get update && apt-get install -y git &&
+RUN apt-get update && apt-get install -y git && \
     git clone $REPO $HOME && \
     cd $HOME && \
+    git submodule init && git submodule update && \
     pip install -r requirements.txt && \
     mkdir instance
 COPY instance/config.py $HOME/instance/config.py
