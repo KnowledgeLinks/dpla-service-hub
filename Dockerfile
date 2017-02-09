@@ -7,6 +7,6 @@ ENV HOME /opt/dpla-service-hub
 ADD . $HOME
 COPY * $HOME/
 RUN cd $HOME && \
-    pip install -r requirements.txt && \
-    nohup gunicorn -b 0.0.0.0:5000 api:app &
-
+    pip install -r requirements.txt
+WORKDIR $HOME
+CMD ["nohup", "gunicorn", "-b", "0.0.0.0:5000", "api:app"]

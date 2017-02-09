@@ -9,8 +9,8 @@ import os
 import xml.etree.ElementTree as etree
 import requests
 import urllib.parse
-from dpla_map.feed import generate_maps
-from flask import abort, Flask, request, render_template, Response
+from dpla_map.feed import generate_maps, Profile
+from flask import abort, Flask, jsonify, request, render_template, Response
 from flask_cache import Cache
 
 app = Flask(__name__, instance_relative_config=True)
@@ -22,8 +22,12 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX relators: <http://id.loc.gov/vocabulary/relators/>
 PREFIX schema: <http://schema.org/>
 """
+
 cache = Cache(app, config={"CACHE_TYPE": "filesystem",
                            "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
+
+PROFILE = Profile(sparql=app.config.get('TRIPLESTORE_URL'),
+                  base_url=app.config.get('BASE_URL'))
 
 with open(os.path.join(PROJECT_BASE, "VERSION")) as fo:
     __version__ = fo.read()   
@@ -47,6 +51,13 @@ def home():
 @app.route("/map/v4")
 def map():
     return generate_maps()
+
+@app.route("/<uid>")
+def detail(uid):
+    """Generates DPLA Map V4 JSON-LD"""
+    iri = rdflib.URIRef(app.config.get("BASE_URL") + uid)
+    return jsonify(PROFILE.generates(iri).serialize(format='json-ld'))
+     
 
 @app.route("/siteindex.xml")
 @cache.cached(timeout=86400) # Cached for 1 day

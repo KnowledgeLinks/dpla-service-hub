@@ -82,10 +82,10 @@ def cli():
                        'islandora', 
                        'oai_pmh', 
                        'ptfs'])) 
-@click.option('--in_file',  
+@click.option('--in_file',
     default=None, 
     help='Metadata Input File with multiple records')
-@click.option('--in_dir',  
+@click.option('--in_dir',
     default=None, 
     help='Directory contain Metadata')
 @click.option('--at_url',
