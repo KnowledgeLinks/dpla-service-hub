@@ -5,6 +5,8 @@ MAINTAINER Jeremy Nelson <jermnelson@gmail.com>
 ENV HOME /opt/dpla-service-hub
 
 ADD . $HOME
-COPY * $HOME
-RUN ./
+COPY * $HOME/
+RUN cd $HOME && \
+    pip install -r requirements.txt && \
+    nohup gunicorn -b 0.0.0.0:5000 api:app &
 
