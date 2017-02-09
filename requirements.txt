@@ -6,3 +6,4 @@ gunicorn
 click
 python-dateutil
 pytz
+passlib
