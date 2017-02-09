@@ -4,7 +4,6 @@ MAINTAINER Jeremy Nelson <jermnelson@gmail.com>
 
 ENV HOME /opt/dpla-service-hub
 
-ADD . $HOME
 COPY * $HOME/
 RUN cd $HOME && \
     pip install -r requirements.txt

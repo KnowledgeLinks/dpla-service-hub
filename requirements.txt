@@ -4,4 +4,4 @@ flask
 Flask-Cache
 gunicorn
 click
-dateutil
+python-dateutil
