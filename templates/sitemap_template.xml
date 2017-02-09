@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:rs="http://www.openarchives.org/rs/terms/">
+    <rs:md capability="resourcelist"
+           {% if config.MOD_DATE %}at="{{ config.MOD_DATE }}"{% endif %} />
+    <rs:ln />
+    {% for instance in instances %}
+    <url>
+        <loc>{{ instance.get('instance').get('value') }}</loc>
+        <lastmod>{% if config.MOD_DATE %}{{ config.MOD_DATE }}{% else %}{{ instance.get('date').get('value')[0:10] }}{% endif %}</lastmod>
+        <rs:md />
+        <rs:ln />
+    </url>
+    {% endfor %}
+</urlset>

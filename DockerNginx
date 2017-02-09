@@ -1,0 +1,4 @@
+FROM nginx:latest
+MAINTAINER Jeremy Nelson <jermnelson@gmail.com>
+RUN rm /etc/nginx/conf.d/default.conf 
+COPY bibcat-nginx.conf /etc/nginx/conf.d/

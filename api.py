@@ -2,36 +2,90 @@
 __author__ = "Jeremy Nelson, Mike Stabile"
 
 import click
+import datetime
 import json
+import math
 import os
 import xml.etree.ElementTree as etree
 import requests
 import urllib.parse
 from dpla_map.feed import generate_maps
 from flask import abort, Flask, request, render_template, Response
+from flask_cache import Cache
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
 
 PROJECT_BASE =  os.path.abspath(os.path.dirname(__file__))
+PREFIX = """PREFIX bf: <http://id.loc.gov/ontologies/bibframe/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX relators: <http://id.loc.gov/vocabulary/relators/>
+PREFIX schema: <http://schema.org/>
+"""
+cache = Cache(app, config={"CACHE_TYPE": "filesystem",
+                           "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
 
 with open(os.path.join(PROJECT_BASE, "VERSION")) as fo:
     __version__ = fo.read()   
 
+
+def __run_query__(query):
+    """Helper function returns results from sparql query"""
+    result = requests.post(app.config.get("TRIPLESTORE_URL"),
+        data={"query": query,
+              "format": "json"})
+    if result.status_code < 400:
+        return result.json().get('results').get('bindings')
+    
+
+
 @app.route("/")
 def home():
-    return "KnowledgeLink.io's DPLA Service Hub Version {}".format(__version__)
+    return render_template("index.html", version=__version__)
 
 
 @app.route("/map/v4")
 def map():
     return generate_maps()
 
-@app.route("/oai")
-def oai_switcher():
-    if 'initiate' in request.args:
-        return intermediation(request.args.get('initiate'))
-    return abort(500)
+@app.route("/siteindex.xml")
+@cache.cached(timeout=86400) # Cached for 1 day
+def site_index():
+    """Generates siteindex XML, each sitemap has a maximum of 50k links
+    dynamically generates the necessary number of sitemaps in the 
+    template"""
+    bindings = __run_query__(PREFIX + """
+SELECT (count(*) as ?count) WHERE {
+   ?s rdf:type bf:Instance .
+}""")
+    count = int(bindings[0].get('count').get('value'))
+    shards = math.ceil(count/50000)
+    mod_date = app.config.get('MOD_DATE')
+    if mod_date is None:
+        mod_date=datetime.datetime.utcnow().strftime("%Y-%m-%d")
+    xml = render_template("siteindex.xml", 
+            count=range(1, shards+1), 
+            last_modified=mod_date)
+    return Response(xml, mimetype="text/xml")
+
+@app.route("/sitemap<offset>.xml", methods=["GET"])
+@cache.cached(timeout=86400)
+def sitemap(offset=0):
+    offset = (int(offset)*50000) - 50000
+    sparql = PREFIX + """
+
+SELECT DISTINCT ?instance ?date
+WHERE {{
+    ?instance rdf:type bf:Instance .
+    ?instance bf:generationProcess ?process .
+    ?process bf:generationDate ?date .
+}} ORDER BY ?instance
+LIMIT 50000
+OFFSET {0}""".format(offset)
+    instances = __run_query__(sparql)
+    xml = render_template("sitemap_template.xml", instances=instances)
+    return Response(xml, mimetype="text/xml")
+
 
 
 def intermediation(static_repo_url):

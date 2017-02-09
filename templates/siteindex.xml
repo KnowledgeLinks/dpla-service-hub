@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+              xmlns:rs="http://www.openarchives.org/rs/terms/">
+    <rs:md />
+    <rs:ln />
+{% for offset in count %}
+   <sitemap>
+      <loc>{{ url_for('sitemap', _external=True, offset=offset) }}</loc>
+      <lastmod>{{ last_modified }}</lastmod>
+      <rs:md />
+      <rs:ln />
+   </sitemap>
+{% endfor %}
+</sitemapindex>

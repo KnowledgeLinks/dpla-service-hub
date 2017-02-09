@@ -61,7 +61,13 @@ def iterate_dc_xml(**kwargs):
 
 def oai_handler(**kwargs):
     from bibcat.ingesters.oai_pmh import OAIPMHIngester
-    ingester = OAIPMHIngester(oai_pmh=kwargs.get('url'))
+    ingester = OAIPMHIngester(repository=kwargs.get('url'))
+
+def islandora_handler(**kwargs):
+    from bibcat.ingesters.oai_pmh import IslandoraIngester
+    ingester = IslandoraIngester(repository=kwargs.get('url'),
+                   rules_ttl=kwargs.get('profile'))
+    ingester.harvest()
 
 @click.group()
 def cli():
@@ -71,7 +77,11 @@ def cli():
 @click.argument('profile')
 @click.option('--ingest_type', 
     help='Ingester type',
-    type=click.Choice(['dc', 'csv', 'mods', 'oai_pmh', 'ptfs'])) 
+    type=click.Choice(['dc', 
+                       'csv', 
+                       'islandora', 
+                       'oai_pmh', 
+                       'ptfs'])) 
 @click.option('--in_file',  
     default=None, 
     help='Metadata Input File with multiple records')
@@ -123,8 +133,11 @@ def add_batch(ingest_type,
                 ingester=ingester,
                 shard_size=shard_size,
                 output_dir=output_dir)
+    elif ingest_type.startswith("islandora"):
+        islandora_handler(url=at_url, profile=profile)
     elif ingest_type.startswith("oai_pmh"):
         pass
+    
         
 
 @click.command()
