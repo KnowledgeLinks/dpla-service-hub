@@ -8,6 +8,7 @@ import math
 import os
 import xml.etree.ElementTree as etree
 import requests
+import rdflib
 import urllib.parse
 from dpla_map.feed import generate_maps, Profile
 from flask import abort, Flask, jsonify, request, render_template, Response
