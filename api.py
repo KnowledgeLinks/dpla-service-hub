@@ -57,7 +57,8 @@ def map():
 def detail(uid):
     """Generates DPLA Map V4 JSON-LD"""
     iri = rdflib.URIRef(app.config.get("BASE_URL") + uid)
-    return jsonify(PROFILE.generates(iri).serialize(format='json-ld'))
+    return Response(PROFILE.generate(iri).serialize(format='json-ld'), 
+        mimetype="application/javascript")
      
 
 @app.route("/siteindex.xml")

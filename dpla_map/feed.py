@@ -8,6 +8,7 @@ import requests
 import uuid
 
 from .map_sparql import GET_ENTITY_INFO, GET_ENTITIES, GET_RULES
+from .map_sparql import GET_BNODE_INFO, GET_PUBLISHER, WEB_RESOURCE
 
 from flask import Response
 from bibcat.ingesters.ingester import new_graph 
@@ -29,11 +30,7 @@ class Profile(object):
         self.sparql_endpoint = kwargs.get("sparql",
             "http://localhost:9999/blazegraph/sparql")
         self.base_url = kwargs.get('base_url')
-        if self.base_url is None and hasattr(config, "BASE_URL"):
-            self.base_url = config.BASE_URL
-        else:
-            self.base_url = "http://bibcat.org/"
-
+        
     def __generate_uri__(self):
         """Method generates an URI based on the base_url"""
         uid = uuid.uuid1()
@@ -65,6 +62,26 @@ class Profile(object):
 
         return aggregation_iri
 
+    def __guess_type__(self, entity_iri, graph):
+        sparql = GET_TYPES.format(entity_iri)
+        results = requests.post(self.sparql_endpoint,
+            data={"query": sparql,
+                  "format": "json"})
+        bindings = results.json().get('results').get('bindings')
+        for row in bindings:
+            bf_class = rdflib.URIRef(row.get('type_of').get('value'))
+            if bf_class == NS_MGR.bf.Image:
+                dcmi_type = NS_MGR.dcmitype.Image
+            elif bf_class == NS_MGR.bf.Audio:
+                dcmi_type = NS_MGR.dcmitype.Sound
+            elif bf_class == NS_MGR.MovingImage:
+                dcmi_type = NS_MGR.dcmitype.MovingImage
+            else: # Default Type
+                dcmi_type = NS_MGR.dcmitype.Text
+            graph.add((entity_iri, NS_MGR.dc.type, dcmi_type))
+            
+
+
     def __populate__(self, **kwargs):
         entity_iri = kwargs.get('entity')
         graph = kwargs.get('graph')
@@ -78,10 +95,11 @@ class Profile(object):
                    "format": "json"})
         bindings = rule_result.json().get('results').get('bindings')
         for row in bindings:
-            if row.get('type').startswith("ur"):
-                obj_ = rdflib.URIRef(row.get('value'))
-            elif row.get('type').startswith('literal'):
-                obj_ = rdflib.Literal(row.get('value'))
+            type_of = row.get('value').get('type')
+            if type_of.startswith("ur"):
+                obj_ = rdflib.URIRef(row.get('value').get('value'))
+            elif type_of.startswith('literal'):
+                obj_ = rdflib.Literal(row.get('value').get('value'))
             graph.add((entity_iri, 
                        dest_prop_uri, 
                        obj_))       
@@ -94,21 +112,50 @@ class Profile(object):
             entity_iri(rdflib.URIRef): Entity IRI
             graph(rdflib.Graph): Output Graph
         """
-        source_resource_iri = self.__generate_uri__()
-        graph.add((source_resource_iri, 
+        graph.add((entity_iri, 
                    NS_MGR.rdf.type, 
                    NS_MGR.dpla.SourceResource))
         sparql = GET_RULES.format(NS_MGR.dpla.SourceResource)
-        print(sparql)
         for row in self.rules.query(sparql):
             destPropUri, linkedRange, linkedClass = row
             if isinstance(linkedRange, rdflib.BNode):
+                bnode_range = self.rules.value(subject=linkedRange,
+                                               predicate=NS_MGR.rdf.type)
+                bnode_prop = self.rules.value(subject=linkedRange,
+                                              predicate=NS_MGR.kds.linkedRange)
+                sparql = GET_BNODE_INFO.format(entity_iri, 
+                    bnode_range, 
+                    bnode_prop)
+                bnode_result = requests.post(self.sparql_endpoint,
+                    data={"query": sparql,
+                          "format": "json"})
+                bindings = bnode_result.json().get("results").get("bindings")
+                for row in bindings:
+                    type_of = row.get("value").get("type")
+                    if type_of.startswith("ur"):
+                        obj_ = rdflib.URIRef(row.get('value').get('value'))
+                    elif type_of.startswith("literal"):
+                        obj_ = rdflib.Literal(row.get('value').get('value'))
+                    graph.add((entity_iri, destPropUri, obj_))
                 continue
-            self.__populate__(entity=source_resource_iri,
+            self.__populate__(entity=entity_iri,
                               graph=graph,
+                              destPropUri=destPropUri,
                               linkedRange=linkedRange,
                               linkedClass=linkedClass)
-        return source_resource_iri
+        # Direct query for Publisher info
+        sparql = GET_PUBLISHER.format(entity_iri)
+        publisher_result = requests.post(self.sparql_endpoint,
+            data={"query": sparql,
+                  "format": "json"})
+        bindings = publisher_result.json().get("results").get("bindings")
+        if len(bindings) > 0:
+            raw_label = bindings[0].get("label").get("value")
+            if len(raw_label) > 0:
+                graph.add((entity_iri,
+                           NS_MGR.dc.publisher, 
+                           rdflib.Literal(raw_label)))
+        return entity_iri
 
     def __web_resource__(self, entity_iri, graph):
         """Takes an entity IRI and graph, queries triplestore based on the 
@@ -119,7 +166,23 @@ class Profile(object):
             entity_iri(rdflib.URIRef): Entity IRI
             graph(rdflib.Graph): Output Graph
         """
-        graph.add((entity_iri, NS_MGR.rdf.type, NS_MGR.edm.WebResource))
+        sparql = WEB_RESOURCE.format(entity_iri)
+        result = requests.post(self.sparql_endpoint,
+            data={"query": sparql,
+                  "format": "json"})
+        bindings = result.json().get('results').get('bindings')
+        item_iri = rdflib.URIRef(bindings[0].get('item').get('value'))
+        graph.add((item_iri, NS_MGR.rdf.type, NS_MGR.edm.WebResource))
+        sparql = GET_RULES.format(NS_MGR.edm.WebResource)
+        for row in self.rules.query(sparql):
+            destPropUri, linkedRange, linkedClass = row
+            self.__populate__(entity=item_iri,
+                              graph=graph,
+                              destPropUri=destPropUri,
+                              linkedRange=linkedRange,
+                              linkedClass=linkedClass)
+
+
         
 
     

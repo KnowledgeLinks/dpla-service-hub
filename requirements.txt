@@ -1,5 +1,6 @@
 requests
 rdflib 
+rdflib-jsonld
 Flask
 Flask-Cache
 Flask-WTF

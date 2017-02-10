@@ -57,12 +57,6 @@ bc:dpla-Place a kds:PropertyExport ;
     kds:linkedRange bf:place ;
     kds:linkedClass bf:Instance .
 
-bc:dpla-Publisher a kds:PropertyExport ;
-    kds:destPropUri dcterms:publisher ;
-    kds:destClassUri dpla:SourceResource ;
-    kds:linkedRange relators:pub ;
-    kds:linkedClass bf:Instance .
-
 bc:dpla-Rights a kds:PropertyExport ;
     kds:destPropUri dc:rights ;
     kds:destClassUri dpla:SourceResource ;
@@ -78,8 +72,8 @@ bc:dpla-Subject a kds:PropertyExport ;
 bc:dpla-Title a kds:PropertyExport ;
     kds:destPropUri dcterms:title ;
     kds:destClassUri dpla:SourceResource ;
-    kds:linkedRange [ a bf:InstanceTitle ;
-                      rdfs:label bf:mainTitle ];
+    kds:linkedRange [ a bf:title ; 
+                      kds:linkedRange bf:mainTitle ]; 
     kds:linkedClass bf:Instance .
 
 bc:dpla-Type a kds:PropertyExport ;
