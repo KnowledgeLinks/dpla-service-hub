@@ -72,6 +72,7 @@ SELECT (count(*) as ?count) WHERE {
    ?s rdf:type bf:Instance .
 }""")
     count = int(bindings[0].get('count').get('value'))
+    print("count is {}".format(count))
     shards = math.ceil(count/50000)
     mod_date = app.config.get('MOD_DATE')
     if mod_date is None:

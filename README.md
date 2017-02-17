@@ -122,9 +122,11 @@ for rdf_record in sample_recs:
 
 ### Dublin Core CSV
 
-## Deploying
+## Deploying with Docker and Docker-Compose
+This project now supports [Docker][DOCK] and [Docker Compose](https://docs.docker.com/compose/). To run
+the DPLA Service Hub stack, run `docker-compose up` from the base directory. It will
+build a bibcat image using the instance/config.py file you created 
 
-### With Docker
 
 ### Server Aggregation Feed
 

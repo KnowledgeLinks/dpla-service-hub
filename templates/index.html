@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
-    <title>DPLA Service Hub {{ version }}</title>
+    <title>DPLA Service Hub version {{ version }}</title>
     <style>
         body {
             font: 1.75em "Open Sans", sans-serif; 
@@ -15,9 +15,10 @@
     </style>
 </head>
 <body>
-    <h1>DPLA Service Hub {{ version }}</h1>
+    <h1>Plains2Peaks</h1>
+    <h3>DPLA Service Hub version: {{ version }}</h3>
     <ul>
-        <li><a href="{{ url_for('map') }}">DPLA v.4 MAP</a></li>
+        <li><a href="https://dp.la/info/developers/map/">DPLA v.4 MAP</a></li>
         <li><a href="{{ url_for('site_index') }}">ResourceSync Sitemap Index</a></li>
     </ul>
 

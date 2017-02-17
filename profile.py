@@ -67,7 +67,7 @@ def islandora_handler(**kwargs):
     from bibcat.ingesters.oai_pmh import IslandoraIngester
     ingester = IslandoraIngester(repository=kwargs.get('url'),
                    rules_ttl=kwargs.get('profile'))
-    ingester.harvest()
+    ingester.harvest(sample_size=kwargs.get('sample_size'))
 
 @click.group()
 def cli():
@@ -91,15 +91,15 @@ def cli():
 @click.option('--at_url',
     default=None,
     help="URL to sitemap, resourceSync, or OAI_PM feeds")
-@click.option('--shard_size',
+@click.option('--sample_size',
     default=None,
-    help='Saves output RDF triples in different shard files')
+    help='Creates a random sample based of this size')
 @click.option('--output_dir',
     default=None,
     help="Output directory for generated RDF turtle files")
 def add_batch(ingest_type, 
     profile, 
-    in_file, in_dir, at_url, shard_size, output_dir):
+    in_file, in_dir, at_url, sample_size, output_dir):
     """Provides multiple ways to batch ingest metadata records
     as BIBFRAME Linked Data with output as RDF Turtle files"""
     click.echo("Running Add Batch")
@@ -134,7 +134,9 @@ def add_batch(ingest_type,
                 shard_size=shard_size,
                 output_dir=output_dir)
     elif ingest_type.startswith("islandora"):
-        islandora_handler(url=at_url, profile=profile)
+        islandora_handler(url=at_url, 
+            profile=profile, 
+            sample_size=sample_size)
     elif ingest_type.startswith("oai_pmh"):
         pass
     
