@@ -16,6 +16,16 @@ sys.path.append(PROJECT_BASE)
 logging.getLogger("rdfw.rdfframework").setLevel(logging.CRITICAL)
 logging.getLogger("passlib").setLevel(logging.CRITICAL)
 
+def __check_set_triplestore__(ingester):
+    """Checks to see if triplestore url can be researched based on 
+    instance/config.py value TRIPLESTORE_URL, if not set to default
+    localhost:9999"""
+    try:
+        result = requests.get(ingester.triplestore_url)
+    except requests.exceptions.ConnectionError:
+        ingester.triplestore_url = 'http://localhost:9999/blazegraph/sparql'
+    
+
 def iterate_dc_xml(**kwargs):
     from bibcat.ingesters.ingester import new_graph
     import xml.etree.ElementTree as etree
@@ -62,11 +72,13 @@ def iterate_dc_xml(**kwargs):
 def oai_handler(**kwargs):
     from bibcat.ingesters.oai_pmh import OAIPMHIngester
     ingester = OAIPMHIngester(repository=kwargs.get('url'))
+    __check_set_triplestore__(ingester)
 
 def islandora_handler(**kwargs):
     from bibcat.ingesters.oai_pmh import IslandoraIngester
     ingester = IslandoraIngester(repository=kwargs.get('url'),
                    rules_ttl=kwargs.get('profile'))
+    __check_set_triplestore__(ingester.metadata_ingester)
     ingester.harvest(sample_size=kwargs.get('sample_size'))
 
 @click.group()
@@ -115,6 +127,7 @@ def add_batch(ingest_type,
             pass
         reader = csv.DictReader(open(in_file, errors='ignore'))
         ingester = csv_ingester.RowIngester(rules_ttl=profile)
+        __check_set_triplestore__(ingester)
         all_graph = new_graph()
         for i, row in enumerate(reader):
             ingester.transform(row)
@@ -128,6 +141,7 @@ def add_batch(ingest_type,
     elif ingest_type.startswith("dc"):
         from bibcat.ingesters import dc
         ingester = dc.DCIngester(rules_ttl=profile)
+        __check_set_triplestore__(ingester)
         if in_file is not None:
             iterate_dc_xml(in_file=in_file,
                 ingester=ingester,
@@ -196,6 +210,7 @@ def add_record(profile, ingest_type, in_file, at_url, item_iri, out_file):
         raise ValueError("Ingester Type {} not found".format(ingest_type))
     if item_iri is not None:
         item_iri = rdflib.URIRef(item_iri)
+    __check_set_triplestore__(ingester)
     ingester.transform(item_uri=item_iri)
     if out_file is not None:
         with open(out_file, 'wb+') as fo:
