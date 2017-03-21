@@ -12,12 +12,13 @@ import sys
 
 PROJECT_BASE =  os.path.abspath(os.path.dirname(__file__))
 sys.path.append(PROJECT_BASE)
+from instance import config
 
 logging.getLogger("rdfw.rdfframework").setLevel(logging.CRITICAL)
 logging.getLogger("passlib").setLevel(logging.CRITICAL)
 
 def __check_set_triplestore__(ingester):
-    """Checks to see if triplestore url can be researched based on 
+    """Checks to see if triplestore url can be reached based on 
     instance/config.py value TRIPLESTORE_URL, if not set to default
     localhost:9999"""
     try:
@@ -76,8 +77,14 @@ def oai_handler(**kwargs):
 
 def islandora_handler(**kwargs):
     from bibcat.ingesters.oai_pmh import IslandoraIngester
+    profile = rdflib.Graph()
+    profile.parse(kwargs.get('profile'), format='turtle')
     ingester = IslandoraIngester(repository=kwargs.get('url'),
-                   rules_ttl=kwargs.get('profile'))
+                   rml_rules=os.path.join(PROJECT_BASE,
+                        os.path.join("bibcat",
+                            os.path.join("rdfw-definitions", 
+                                         "rml-bibcat-mods.ttl"))),
+                   base_url=config.BASE_URL)
     __check_set_triplestore__(ingester.metadata_ingester)
     ingester.harvest(sample_size=kwargs.get('sample_size'))
 

@@ -5,22 +5,14 @@
 @prefix modsr: <http://knowledgelinks.io/ns/mods/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix pcdm: <http://pcdm.org/models#> .
+@prefix rml:    <http://semweb.mmlab.be/ns/rml#> .
+@prefix rr:     <http://www.w3.org/ns/r2rml#>.
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix relators: <http://id.loc.gov/vocabulary/relators/> .
 @prefix dcr: <http://knowledgelinks.io/ns/dc/> .
 @prefix schema: <http://schema.org/> .
-
-bc:bf-Organization a kds:PropertyLinker;
-    kds:destPropUri [ bf:heldBy <https://coloradocollege.edu/library> ] ;
-    kds:destClassUri bf:Item .
-
-bc:bf-ItemIRITemplate a kds:IRIPattern ;
-    kds:srcPropXpath "mods:location/mods:url" ;
-    kds:srcPropRegex "/(\\w+:\\d+)";
-    kds:destClassUri bf:Item ;
-    kds:iriPattern "http://digitalcc.coloradocollege.edu/pid{0}" . 
 
 <https://coloradocollege.edu/library> a bf:Organization ;
     rdfs:label "Tutt Library, Colorado College" .
