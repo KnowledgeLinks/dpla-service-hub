@@ -1,0 +1,25 @@
+@prefix adms:   <http://www.w3.org/ns/adms#>.
+@prefix bc: <http://knowledgelinks.io/ns/bibcat/> .
+@prefix bf: <http://id.loc.gov/ontologies/bibframe/> .
+@prefix dcterms:<http://purl.org/dc/terms/> .
+@prefix kds: <http://knowledgelinks.io/ns/data-structures/> .
+@prefix locn:   <http://www.w3.org/ns/locn#>.
+@prefix oslo:   <http://purl.org/oslo/ns/localgov#>.
+@prefix ql:     <http://semweb.mmlab.be/ns/ql#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix relators: <http://id.loc.gov/vocabulary/relators/> .
+@prefix rml:    <http://semweb.mmlab.be/ns/rml#> .
+@prefix rr:     <http://www.w3.org/ns/r2rml#>.
+@prefix schema: <http://schema.org/> .
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+@prefix vcard:  <http://www.w3.org/2006/vcard/ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+<https://www.coloradocollege.edu> a schema:CollegeOrUniversity,
+    bf:Organization ;
+    rdfs:label "Colorado College"@en ;
+    bc:repository [ a bc:IslandoraIngester ;
+        schema:url <https://digitalcc.coloradocollege.edu/islandora/object/> ;
+        bc:harvester <https://digitalcc.coloradocollege.edu/oai-pmh>
+    ] .

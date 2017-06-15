@@ -1,14 +1,16 @@
 """Profile Command-Line Utilities for DP.LA Service Hub Aggregator Feed"""
 __author__ = "Jeremy Nelson, Mike Stabile"
 
-import click
 import csv
 import datetime
 import logging
 import os
+import uuid
+import sys
+import click
 import rdflib
 import requests
-import sys
+
 
 PROJECT_BASE =  os.path.abspath(os.path.dirname(__file__))
 sys.path.append(PROJECT_BASE)
@@ -88,46 +90,50 @@ def islandora_handler(**kwargs):
     __check_set_triplestore__(ingester.metadata_ingester)
     ingester.harvest(sample_size=kwargs.get('sample_size'))
 
+def instance_iri():
+    return "{}{}".format(config.BASE_URL, uuid.uuid1())
+
 @click.group()
 def cli():
     pass
 
 @click.command()
 @click.argument('profile')
-@click.option('--ingest_type', 
-    help='Ingester type',
-    type=click.Choice(['dc', 
-                       'csv', 
-                       'islandora', 
-                       'oai_pmh', 
-                       'ptfs'])) 
 @click.option('--in_file',
     default=None, 
     help='Metadata Input File with multiple records')
 @click.option('--in_dir',
     default=None, 
     help='Directory contain Metadata')
-@click.option('--at_url',
-    default=None,
-    help="URL to sitemap, resourceSync, or OAI_PM feeds")
 @click.option('--sample_size',
     default=None,
     help='Creates a random sample based of this size')
 @click.option('--output_dir',
     default=None,
     help="Output directory for generated RDF turtle files")
-def add_batch(ingest_type, 
-    profile, 
-    in_file, in_dir, at_url, sample_size, output_dir):
+def add_batch(profile, 
+    in_file, in_dir, sample_size, output_dir):
     """Provides multiple ways to batch ingest metadata records
     as BIBFRAME Linked Data with output as RDF Turtle files"""
     click.echo("Running Add Batch")
     profile_path = os.path.abspath(os.path.join(PROJECT_BASE,
-        os.path.join("custom", profile)))
+        os.path.join("profiles", 
+        profile)))
     if not os.path.exists(profile_path):
         raise ValueError("Profile RDF Rule {} not found".format(
             profile_path))
-    if ingest_type.startswith("csv"):
+    profile_graph = rdflib.Graph()
+    profile_graph.parse(profile_path, format='turtle')
+    query_result = profile_graph.query("""SELECT ?org ?ingester ?harvester
+WHERE {
+     ?org bc:repository ?repo .
+     ?repo rdf:type ?ingester ;
+           bc:harvester ?harvester .
+}""").bindings[0]
+    institution_iri = query_result.get("org")
+    ingest_type = query_result.get("ingester")
+    harvester_url = query_result.get("harvester")
+    if ingest_type.endswith("csv"):
         from bibcat.ingesters import csv as csv_ingester
         from bibcat.ingesters.ingester import new_graph
         if in_file is not None:
@@ -145,18 +151,25 @@ def add_batch(ingest_type,
                 click.echo(i, nl=False)
         with open(os.path.join(output_dir, 'dpla-csv.ttl'), 'wb+') as fo:
             fo.write(all_graph.serialize(format='turtle'))
-    elif ingest_type.startswith("dc"):
-        from bibcat.ingesters import dc
-        ingester = dc.DCIngester(rules_ttl=profile)
+    elif ingest_type.endswith("ContentDMIngester"):
+        from bibcat.ingesters.oai_pmh import ContentDMIngester
+        set_spec = input("\tFilter by setSpec: ")
+        ingester = ContentDMIngester(
+            triplestore_url=config.TRIPLESTORE_URL,
+            rml_rules=profile_path,
+            instance_iri=instance_iri,
+            institution_iri=institution_iri,
+            repository=harvester_url)
+        ingester.harvest(setSpec=set_spec)
         __check_set_triplestore__(ingester)
         if in_file is not None:
             iterate_dc_xml(in_file=in_file,
                 ingester=ingester,
                 shard_size=shard_size,
                 output_dir=output_dir)
-    elif ingest_type.startswith("islandora"):
+    elif ingest_type.startswith("IslandoraIngester"):
         islandora_handler(url=at_url, 
-            profile=profile, 
+            profile=profile_path, 
             sample_size=sample_size)
     elif ingest_type.startswith("oai_pmh"):
         pass
@@ -165,14 +178,11 @@ def add_batch(ingest_type,
 
 @click.command()
 @click.argument('profile')
-@click.option('--ingest_type', 
-    help='Ingester type',
-    type=click.Choice(['dc', 'csv', 'mods', 'ptfs'])) 
 @click.option('--item_iri', default=None, help="Optional IRI for Item")
 @click.option('--in_file',  default=None, help='Metadata Input File')
 @click.option('--at_url', default=None, help='Metadata Input URL')
 @click.option('--out_file', default=None, help='Saves output to RDF Turtle file')
-def add_record(profile, ingest_type, in_file, at_url, item_iri, out_file):
+def add_record(profile, in_file, at_url, item_iri, out_file):
     """Takes a RDF ttl Rule file called a profile, a metadata input file,
     and either outputs to an RDF BIBFRAME turtle file or to the RDF triplestore
     defined in the application's configuration.
