@@ -16,10 +16,17 @@
 @prefix vcard:  <http://www.w3.org/2006/vcard/ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 
-<https://www.coloradocollege.edu> a schema:CollegeOrUniversity,
+<https://www.coloradocollege.edu/> a schema:CollegeOrUniversity,
     bf:Organization ;
     rdfs:label "Colorado College"@en ;
     bc:repository [ a bc:IslandoraIngester ;
         schema:url <https://digitalcc.coloradocollege.edu/islandora/object/> ;
         bc:harvester <https://digitalcc.coloradocollege.edu/oai-pmh>
     ] .
+
+bc:MODS2BIBFRAME_Item rr:predicateObjectMap [
+    rr:predicate bf:heldBy ;
+    rr:objectMap [
+        rr:constant <https://www.coloradocollege.edu/> ;
+    ]
+] .

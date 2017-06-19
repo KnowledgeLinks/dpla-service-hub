@@ -17,26 +17,17 @@
 @prefix vcard:  <http://www.w3.org/2006/vcard/ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 
-<http://denverpubliclibrary.org/> a schema:Library,
+<https://www.cde.state.co.us/stateinfo> a schema:Library,
     bf:Organization ;
-    rdfs:label "Denver Public Library"@en ;
-    bc:repository [ a bc:ContentDMIngester ;
-        bc:harvester <http://cdm16079.contentdm.oclc.org/oai/oai.php>
+    rdfs:label "Colorado State Publications Library"@en ;
+    bc:repository [ a bc:IslandoraIngester ;
+        schema:url <: http://hermes.cde.state.co.us/drupal/islandora/object/> ;
+        bc:harvester <http://hermes.cde.state.co.us/drupal/oai2> 
     ] .
 
-bc:OAIPMH_DCtoBIBFRAME_subject_predObj kds:delimiter ";", "\n" .
-
-bc:OAIPMH_DCtoBIBFRAME_Item  rr:predicateObjectMap [
-        rr:predicate bf:usageAndAccessPolicy ;
-        rr:objectMap [
-            rr:constant <http://rightsstatements.org/vocab/InC/1.0/>
-        ]
-    ] ;
-    
-    rr:predicateObjectMap [
-        rr:predicate bf:heldBy ;
-        rr:objectMap [
-            rr:constant <http://denverpubliclibrary.org/>
-        ]
-
-    ] .
+bc:MODS2BIBFRAME_Item  rr:predicateObjectMap [
+    rr:predicate bf:heldBy ;
+    rr:objectMap [
+        rr:constant <https://www.cde.state.co.us/stateinfo> ;
+    ]
+] .
