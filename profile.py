@@ -1,6 +1,8 @@
 """Profile Command-Line Utilities for DP.LA Service Hub Aggregator Feed"""
 __author__ = "Jeremy Nelson, Mike Stabile"
 
+__author__ = "Jeremy Nelson"
+
 import csv
 import datetime
 import logging
