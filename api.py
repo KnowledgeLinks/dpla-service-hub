@@ -10,7 +10,7 @@ import xml.etree.ElementTree as etree
 import requests
 import rdflib
 import urllib.parse
-from dpla_map.feed import generate_maps, Profile
+#from dpla_map.feed import generate_maps, Profile
 from flask import abort, Flask, jsonify, request, render_template, Response
 from flask_cache import Cache
 
@@ -26,9 +26,6 @@ PREFIX schema: <http://schema.org/>
 
 cache = Cache(app, config={"CACHE_TYPE": "filesystem",
                            "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
-
-PROFILE = Profile(sparql=app.config.get('TRIPLESTORE_URL'),
-                  base_url=app.config.get('BASE_URL'))
 
 with open(os.path.join(PROJECT_BASE, "VERSION")) as fo:
     __version__ = fo.read()   
@@ -51,14 +48,13 @@ def home():
 
 @app.route("/map/v4")
 def map():
-    return generate_maps()
+    return "In generate MAPv4 route"
 
 @app.route("/<uid>")
 def detail(uid):
     """Generates DPLA Map V4 JSON-LD"""
     iri = rdflib.URIRef(app.config.get("BASE_URL") + uid)
-    return Response(PROFILE.generate(iri).serialize(format='json-ld'), 
-        mimetype="application/javascript")
+    return "Detail JSON-LD in MAPv4 for {}".format(uid)
      
 
 @app.route("/siteindex.xml")
@@ -72,7 +68,6 @@ SELECT (count(*) as ?count) WHERE {
    ?s rdf:type bf:Instance .
 }""")
     count = int(bindings[0].get('count').get('value'))
-    print("count is {}".format(count))
     shards = math.ceil(count/50000)
     mod_date = app.config.get('MOD_DATE')
     if mod_date is None:
