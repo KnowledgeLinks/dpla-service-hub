@@ -173,10 +173,11 @@ WHERE {
         islandora_handler(url=at_url, 
             profile=profile_path, 
             sample_size=sample_size)
+        islandora_handler.run()
     elif ingest_type.startswith("oai_pmh"):
         pass
     
-        
+            
 
 @click.command()
 @click.argument('profile')

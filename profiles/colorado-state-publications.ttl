@@ -21,7 +21,7 @@
     bf:Organization ;
     rdfs:label "Colorado State Publications Library"@en ;
     bc:repository [ a bc:IslandoraIngester ;
-        schema:url <: http://hermes.cde.state.co.us/drupal/islandora/object/> ;
+        schema:url <http://hermes.cde.state.co.us/drupal/islandora/object/> ;
         bc:harvester <http://hermes.cde.state.co.us/drupal/oai2> 
     ] .
 
