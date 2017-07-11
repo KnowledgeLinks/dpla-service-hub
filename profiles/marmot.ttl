@@ -143,7 +143,7 @@
 
     rml:logicalSource [
         rml:source "{obj}";
-        rml:iterator "."
+        rml:iterator "$"
 
     ] ;
 
@@ -158,3 +158,22 @@
             rr:parentTriplesMap <#JSONMarmotToBFTopic>
         ]
     ] .
+
+<#JSONMarmotToBFTopic> a rr:TriplesMap ;
+
+    rml:logicalSource [
+        rml:source "{obj}" ;
+        rml:iterator "$"
+    ] ;
+
+    rr:subjectMap [
+        rr:termType rr:BlankNode ;
+        rr:class bf:Topic
+    ] ;
+
+    rr:predicateObjectMap [
+        rr:predicate rdf:value ;
+        rr:objectMap [
+            rr:reference "$.subject"       
+        ]
+    ] . 
