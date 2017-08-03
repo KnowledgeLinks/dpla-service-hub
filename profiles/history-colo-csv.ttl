@@ -90,36 +90,6 @@
         ]
     ] ;
 
-    rr:predicateObjectMap [
-        rr:predicate bf:identifiedBy ;
-        rr:objectMap [
-            rr:parentTriplesMap <#DPLSCV_BIBFRAME_LocalIdentifier>
-        ]
-    ];
- 
-    rr:predicateObjectMap [
-        rr:predicate bf:identifiedBy ;
-        rr:objectMap [
-            rr:parentTriplesMap <#DPLSCV_BIBFRAME_OclcIdentifier>
-        ]
-    ];
-
-    rr:predicateObjectMap [
-        rr:predicate bf:media ;
-        rr:objectMap [
-            rr:parentTriplesMap <#DPLSCV_BIBFRAME_Media> 
-
-        ]
-    ];
-
-
-    rr:predicateObjectMap [
-        rr:predicate bf:note ;
-        rr:objectMap [
-            rr:parentTriplesMap <#DPLSCV_BIBFRAME_Note> ;
-        ]
-    ] ;
-
    rr:predicateObjectMap [
         rr:predicate bf:summary ;
         rr:objectMap [
@@ -161,48 +131,7 @@
             rr:datatype xsd:string 
         ]
     ] .
-
-
-<#DPLSCV_BIBFRAME_LocalIdentifier> a rr:TriplesMap ;
-
-    rml:logicalSource [
-        rml:source "denver-public.csv" ;
-        rml:referenceFormulation ql:CSV 
-    ] ;
-
-    rr:subjectMap [
-        rr:termType rr:BlankNode ;
-        rr:class bf:Local 
-    ] ;
-
-    rr:predicateObjectMap [
-        rr:predicate rdf:value ;
-        rr:objectMap [
-            rr:reference "Call Number" ;
-            rr:datatype xsd:string 
-        ]
-    ] .
-
-<#DPLSCV_BIBFRAME_OclcIdentifier> a rr:TriplesMap ;
-
-    rml:logicalSource [
-        rml:source "denver-public.csv" ;
-        rml:referenceFormulation ql:CSV 
-    ] ;
-
-    rr:subjectMap [
-        rr:termType rr:BlankNode ;
-        rr:class bf:oclc 
-    ] ;
-
-    rr:predicateObjectMap [
-        rr:predicate rdf:value ;
-        rr:objectMap [
-            rr:reference "OCLC number" ;
-            rr:datatype xsd:string 
-        ]
-    ] .
-
+ 
 <#DPLCSV_BIBFRAME_InstanceTitle> a rr:TriplesMap ;
 
     rml:logicalSource [
@@ -242,58 +171,6 @@
             rr:datatype xsd:string 
         ]
     ] .
-
-<#DPLSCV_BIBFRAME_Media> a rr:TriplesMap ;
-
-    rml:logicalSource [
-        rml:source "denver-public.csv" ;
-        rml:referenceFormulation ql:CSV 
-
-    ] ;
-
-     rr:subjectMap [
-        rr:termType rr:BlankNode ;
-        rr:class bf:Media ;
-    ] ;
-
-    rr:predicateObjectMap [
-        rr:predicate rdf:value ;
-        rr:objectMap [
-            rr:reference "Format-Medium" ;
-            rr:datatype xsd:string
-        ]
-    ] .
-
-
-<#DPLSCV_BIBFRAME_Note> a rr:TriplesMap ;
-
-    rml:logicalSource [
-        rml:source "denver-public.csv" ;
-        rml:referenceFormulation ql:CSV 
-
-    ] ;
-
-     rr:subjectMap [
-        rr:termType rr:BlankNode ;
-        rr:class bf:Note ;
-    ] ;
-
-    rr:predicateObjectMap [
-        rr:predicate bf:noteType ;
-        rr:objectMap [
-            rr:constant "admin"@en ;
-            rr:datatype xsd:string  ;
-        ] 
-    ] ; 
-
-    rr:predicateObjectMap [
-        rr:predicate rdf:value ;
-        rr:objectMap [
-            rr:reference "Note" ;
-            rr:datatype xsd:string
-        ]
-    ] .
-
 
 <#DPLCSV2BIBFRAME_InstanceSummary> a rr:TriplesMap ;
 
