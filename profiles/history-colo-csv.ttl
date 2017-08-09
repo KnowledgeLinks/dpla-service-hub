@@ -15,12 +15,12 @@
 <#DPLCSV_BIBFRAME_Item> a rr:TriplesMap ;
 
     rml:logicalSource [        
-        rml:source "denver-public.csv" ;
+        rml:source "history-colorado.csv" ;
         rml:referenceFormulation ql:CSV ;
     ];
    
     rr:subjectMap [
-        rr:reference "Reference URL";
+        rr:template "{item_iri}";
         rr:class bf:Item
     ] ;
 
@@ -32,15 +32,6 @@
     ]; 
 
    rr:predicateObjectMap [
-        rr:predicate bf:AccessPolicy ;
-        rr:objectMap [
-            rr:reference "Rights Statement" ;
-            rr:datatype xsd:anyURI 
-        ]
-
-    ] ;
-
-   rr:predicateObjectMap [
         rr:predicate  bf:itemOf ;
         rr:objectMap [
             rr:template "{instance_iri}" ;
@@ -48,18 +39,26 @@
         ]
     ]; 
 
+    rr:predicateObjectMap [
+        rr:predicate bf:identifiedBy ;
+        rr:objectMap [
+            rr:parentTriplesMap <#HISTCOCSV_ObjectLocalIdentifier>
+        ]
+
+    ] ;
+
    rr:predicateObjectMap [
         rr:predicate  bf:heldBy ;
         rr:objectMap [
-            rr:constant <https://www.denverlibrary.org/> 
+            rr:constant <http://www.historycolorado.org/> 
         ]
     ] .
 
-
+    
 <#DPLCSV_BIBFRAME_Instance> a rr:TriplesMap ;
 
     rml:logicalSource [        
-        rml:source "denver-public.csv" ;
+        rml:source "history-colorado.csv" ;
         rml:referenceFormulation ql:CSV ;
     ];
 
@@ -70,9 +69,9 @@
     ] ;
 
    rr:predicateObjectMap [
-        rr:predicate bf:extent ;
+        rr:predicate bf:dimensions ;
         rr:objectMap [
-            rr:parentTriplesMap <#DPLCSV_BF_InstanceExtent>
+           rr:reference "Dimension" 
         ]
     ]; 
 
@@ -86,14 +85,22 @@
     rr:predicateObjectMap [
         rr:predicate bf:instanceOf ;
         rr:objectMap [
-            rr:parentTriplesMap <#DPLSCV_BIBFRAME_Work> ;
+            rr:parentTriplesMap <#HISTCOCV_BIBFRAME_Work> ;
         ]
+    ] ;
+
+    rr:predicateObjectMap [
+        rr:predicate bf:note ;
+        rr:objectMap [
+            rr:parentTriplesMap <#HISTCOCV_BIBFRAME_InscriptionNote> ;
+        ]
+
     ] ;
 
    rr:predicateObjectMap [
         rr:predicate bf:summary ;
         rr:objectMap [
-            rr:parentTriplesMap <#DPLCSV2BIBFRAME_InstanceSummary>
+            rr:parentTriplesMap <#HISTCOCSV2BIBFRAME_InstanceSummary>
         ]
     ] ;
 
@@ -101,7 +108,7 @@
    rr:predicateObjectMap [
         rr:predicate bf:title ;
         rr:objectMap [
-            rr:parentTriplesMap <#DPLCSV_BIBFRAME_InstanceTitle> ;
+            rr:parentTriplesMap <#HISTCOCSV_BIBFRAME_InstanceTitle> ;
        ] 
     ] ;
 
@@ -112,31 +119,41 @@
        ] 
     ] .
 
-<#DPLCSV_BF_InstanceExtent> a rr:TriplesMap ;
+<#HISTCOCV_BIBFRAME_InscriptionNote> a rr:TriplesMap ;
 
-    rml:logicalSource [
-        rml:source "denver-public.csv" ;
-        rml:referenceFormulation ql:CSV 
+    rml:logicalsource [
+        rml:source "history-colorado.csv" ;
+        rml:referenceformulation ql:csv 
     ] ;
 
     rr:subjectMap [
         rr:termType rr:BlankNode ;
-        rr:class bf:Extent ;
+        rr:class bf:Note 
     ] ;
+
+   rr:predicateObjectMap [
+        rr:predicate bf:noteType ;
+        rr:objectMap [
+            rr:constant "inscription"@en ;
+            rr:datatype xsd:string  ;
+        ] 
+    ] ; 
 
     rr:predicateObjectMap [
         rr:predicate rdf:value ;
         rr:objectMap [
-            rr:reference "Description" ;
+            rr:reference "Inscription" ;
             rr:datatype xsd:string 
-        ]
+        ] 
     ] .
- 
-<#DPLCSV_BIBFRAME_InstanceTitle> a rr:TriplesMap ;
 
-    rml:logicalSource [
-        rml:source "denver-public.csv" ;
-        rml:referenceFormulation ql:CSV 
+
+
+<#HISTCOCSV_BIBFRAME_InstanceTitle> a rr:TriplesMap ;
+
+    rml:logicalsource [
+        rml:source "history-colorado.csv" ;
+        rml:referenceformulation ql:csv 
     ] ;
 
     rr:subjectMap [
@@ -147,7 +164,7 @@
     rr:predicateObjectMap [
         rr:predicate bf:mainTitle ;
         rr:objectMap [
-            rr:reference "Title"; 
+            rr:reference "Non-Original Title"; 
             rr:datatype xsd:string 
         ]
     ] .
@@ -155,7 +172,7 @@
 <#DPLCSV_BIBFRAME_InstanceVarientTitle> a rr:TriplesMap ;
 
     rml:logicalSource [
-        rml:source "denver-public.csv";
+        rml:source "history-colorado.csv";
         rml:referenceFormulation ql:CSV 
     ] ;
 
@@ -172,10 +189,10 @@
         ]
     ] .
 
-<#DPLCSV2BIBFRAME_InstanceSummary> a rr:TriplesMap ;
+<#HISTCOCSV2BIBFRAME_InstanceSummary> a rr:TriplesMap ;
 
     rml:logicalSource [
-        rml:source "denver-public.csv" ;
+        rml:source "history-colorado.csv" ;
         rml:referenceFormulation ql:CSV 
 
     ] ;
@@ -188,15 +205,36 @@
     rr:predicateObjectMap [
         rr:predicate rdf:value ;
         rr:objectMap [
-            rr:reference "Summary" ;
+            rr:reference "Description" ;
             rr:datatype xsd:string
         ]
     ] .
 
-<#DPLSCV_BIBFRAME_Work> a rr:TriplesMap ;
+<#HISTCOCSV_ObjectLocalIdentifier>  a rr:TriplesMap ;
 
     rml:logicalSource [
-        rml:source "denver-public.csv";
+        rml:source "history-colorado.csv";
+        rml:referenceFormulation ql:CSV ;
+    ] ;
+
+     rr:subjectMap [
+        rr:termType rr:BlankNode ;
+        rr:class bf:Local ;
+    ] ;
+
+    rr:predicateObjectMap [
+        rr:predicate rdf:value ;
+        rr:objectMap [
+            rr:reference "Object ID" ;
+            rr:datatype xsd:string
+        ]
+    ] .
+
+
+<#HISTCOCV_BIBFRAME_Work> a rr:TriplesMap ;
+
+    rml:logicalSource [
+        rml:source "history-colorado.csv";
         rml:referenceFormulation ql:CSV ;
     ] ;
 
@@ -208,7 +246,7 @@
     rr:predicateObjectMap [
         rr:predicate bf:contribution ;
         rr:objectMap [
-            rr:parentTriplesMap <#DPLSCV_BIBFRAME_WorkCreator>
+            rr:parentTriplesMap <#HISTCOCSV_BIBFRAME_WorkCreator>
         ]
     ] ;
 
@@ -219,10 +257,11 @@
         ]
     ] .
 
-<#DPLSCV_BIBFRAME_WorkCreator> a rr:TriplesMap ;
+
+<#HISTCOCSV_BIBFRAME_WorkCreator> a rr:TriplesMap ;
 
      rml:logicalSource [
-        rml:source "denver-public.csv";
+        rml:source "history-colorado.csv";
         rml:referenceFormulation ql:CSV ;
     ] ;
 
@@ -241,14 +280,14 @@
      rr:predicateObjectMap [
         rr:predicate bf:agent ;
         rr:objectMap [
-            rr:parentTriplesMap <#DPLCSV_WorkCreatorAgent>
+            rr:parentTriplesMap <#HISTCOCSV_WorkCreatorAgent>
         ]
     ] .
 
-<#DPLCSV_WorkCreatorAgent> a rr:TriplesMap ;
+<#HISTCOCSV_WorkCreatorAgent> a rr:TriplesMap ;
 
      rml:logicalSource [
-        rml:source "denver-public.csv";
+        rml:source "history-colorado.csv";
         rml:referenceFormulation ql:CSV ;
      ] ;
 
@@ -260,7 +299,7 @@
     rr:predicateObjectMap [
         rr:predicate rdf:value ;
         rr:objectMap [
-            rr:reference "Creator" ;
+            rr:reference "Maker.Term" ;
         ]
     ] .
 
