@@ -63,8 +63,10 @@ def detail(uid):
     """Generates DPLA Map V4 JSON-LD"""
     uri = app.config.get("BASE_URL") + uid
     DPLA_MAPv4.run(instance_iri=uri)
-    return jsonify(
-        DPLA_MAPv4.output.serialize(format='json-ld'))
+    if len(DPLA_MAPv4.output) < 1:
+        abort(404)
+    raw_instance = DPLA_MAPv4.output.serialize(format='json-ld')
+    return Response(raw_instance, mimetype="application/json")
      
 
 @app.route("/siteindex.xml")

@@ -26,7 +26,6 @@
 <https://www.evld.org/> a schema:Library, 
     bf:Organization ;
     rdfs:label "Eagle Valley Library District"@en .
-   
 
 <http://www.salidalibrary.org/> a schema:Library,
     bf:Organization ;

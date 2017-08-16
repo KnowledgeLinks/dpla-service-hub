@@ -22,3 +22,11 @@ bc:PTFStoBF_Item   rr:predicateObjectMap [
         rr:constant <http://library.wyo.gov/> ;
     ]
 ] .
+
+
+bc:PTFStoBF_Item  rr:predicateObjectMap [
+    rr:predicate bf:AccessPolicy ;
+    rr:objectMap [
+        rr:constant <http://rightsstatements.org/vocab/CNE/1.0/> ;
+    ]
+] .
