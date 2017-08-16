@@ -6,13 +6,18 @@ import datetime
 import json
 import math
 import os
+import pkg_resources
 import xml.etree.ElementTree as etree
 import requests
 import rdflib
 import urllib.parse
+
+import bibcat.rml.processor as processor
+
 #from dpla_map.feed import generate_maps, Profile
 from flask import abort, Flask, jsonify, request, render_template, Response
 from flask_cache import Cache
+from resync import Resource, ResourceList
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
@@ -23,12 +28,14 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX relators: <http://id.loc.gov/vocabulary/relators/>
 PREFIX schema: <http://schema.org/>
 """
+DPLA_MAPv4 = processor.SPARQLProcessor(
+        triplestore_url=app.config.get("TRIPLESTORE_URL"),
+        rml_rules=["bf-to-map4.ttl"])
+
+__version__ = "0.9.8"
 
 cache = Cache(app, config={"CACHE_TYPE": "filesystem",
                            "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
-
-with open(os.path.join(PROJECT_BASE, "VERSION")) as fo:
-    __version__ = fo.read()   
 
 
 def __run_query__(query):
@@ -37,6 +44,7 @@ def __run_query__(query):
         data={"query": query,
               "format": "json"})
     if result.status_code < 400:
+        print(result.json().keys())
         return result.json().get('results').get('bindings')
     
 
@@ -53,32 +61,39 @@ def map():
 @app.route("/<uid>")
 def detail(uid):
     """Generates DPLA Map V4 JSON-LD"""
-    iri = rdflib.URIRef(app.config.get("BASE_URL") + uid)
-    return "Detail JSON-LD in MAPv4 for {}".format(uid)
+    uri = app.config.get("BASE_URL") + uid
+    DPLA_MAPv4.run(instance_iri=uri)
+    return jsonify(
+        DPLA_MAPv4.output.serialize(format='json-ld'))
      
 
 @app.route("/siteindex.xml")
-@cache.cached(timeout=86400) # Cached for 1 day
+#@cache.cached(timeout=86400) # Cached for 1 day
 def site_index():
     """Generates siteindex XML, each sitemap has a maximum of 50k links
     dynamically generates the necessary number of sitemaps in the 
     template"""
     bindings = __run_query__(PREFIX + """
-SELECT (count(*) as ?count) WHERE {
+SELECT (count(?s) as ?count) WHERE {
    ?s rdf:type bf:Instance .
+   ?item bf:itemOf ?s .
 }""")
     count = int(bindings[0].get('count').get('value'))
     shards = math.ceil(count/50000)
     mod_date = app.config.get('MOD_DATE')
     if mod_date is None:
         mod_date=datetime.datetime.utcnow().strftime("%Y-%m-%d")
+    
+    #for row in bindings:
+        #resource_list.add(
+        #    Resource(
     xml = render_template("siteindex.xml", 
             count=range(1, shards+1), 
             last_modified=mod_date)
     return Response(xml, mimetype="text/xml")
 
 @app.route("/sitemap<offset>.xml", methods=["GET"])
-@cache.cached(timeout=86400)
+#@cache.cached(timeout=86400)
 def sitemap(offset=0):
     offset = (int(offset)*50000) - 50000
     sparql = PREFIX + """
@@ -88,11 +103,21 @@ WHERE {{
     ?instance rdf:type bf:Instance .
     ?instance bf:generationProcess ?process .
     ?process bf:generationDate ?date .
+    ?item bf:itemOf ?instance .
 }} ORDER BY ?instance
 LIMIT 50000
 OFFSET {0}""".format(offset)
     instances = __run_query__(sparql)
-    xml = render_template("sitemap_template.xml", instances=instances)
+    resource_list = ResourceList()
+    for i,row in enumerate(instances):
+        instance = row.get('instance')
+        last_mod = row.get("date").get("value")[0:10]
+        resource_list.add(Resource(instance.get("value"),
+                                   lastmod=last_mod))
+        if i >= 500:
+            xml = resource_list.as_xml()
+            break
+    #xml = render_template("sitemap_template.xml", instances=instances)
     return Response(xml, mimetype="text/xml")
 
 

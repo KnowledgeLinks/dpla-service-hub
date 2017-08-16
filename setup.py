@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
 
-with open("VERSION") as fo:
-    VERSION = fo.read()
+VERSION = "0.9.8"
 
 setup(
     "dpla_service_hub",
