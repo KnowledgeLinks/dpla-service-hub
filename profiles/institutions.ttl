@@ -16,6 +16,10 @@
 @prefix vcard:  <http://www.w3.org/2006/vcard/ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 
+<http://www.uwyo.edu/ahc/> a bf:Organization,
+    schema:Archive ;
+    rdfs:label "American Heritage Center"@en .
+
 <https://www.steamboatlibrary.org/> a bf:Organization,
         schema:Library ;
     rdfs:label "Bud Werner Memorial Library"@en .
