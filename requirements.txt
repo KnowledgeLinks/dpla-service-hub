@@ -10,3 +10,4 @@ click
 python-dateutil
 pytz
 passlib
+bibcat

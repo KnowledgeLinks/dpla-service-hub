@@ -8,7 +8,7 @@ ENV REPO https://github.com/KnowledgeLinks/dpla-service-hub.git
 RUN apt-get update && apt-get install -y git && \
     git clone $REPO $HOME && \
     cd $HOME && \
-    git submodule init && git submodule update && \
+    git checkout plains2peaks && \
     pip install -r requirements.txt && \
     mkdir instance
 COPY instance/config.py $HOME/instance/config.py
