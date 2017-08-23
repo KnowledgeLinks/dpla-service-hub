@@ -14,7 +14,6 @@ import urllib.parse
 
 import bibcat.rml.processor as processor
 
-#from dpla_map.feed import generate_maps, Profile
 from flask import abort, Flask, jsonify, request, render_template, Response
 from flask_cache import Cache
 from resync import Resource, ResourceList
@@ -28,11 +27,17 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX relators: <http://id.loc.gov/vocabulary/relators/>
 PREFIX schema: <http://schema.org/>
 """
+
 DPLA_MAPv4 = processor.SPARQLProcessor(
         triplestore_url=app.config.get("TRIPLESTORE_URL"),
-        rml_rules=["bf-to-map4.ttl"])
+        rml_rules=["bf-to-map4.ttl", 
+            "{}/profiles/map4.ttl".format(PROJECT_BASE)])
 
-__version__ = "0.9.8"
+MAPv4_context = {"edm": "http://www.europeana.eu/schemas/edm/",
+		 "dcterms": "http://purl.org/dc/terms/",
+		 "org": "http://www.openarchives.org/ore/terms"}
+
+__version__ = "0.9.9"
 
 cache = Cache(app, config={"CACHE_TYPE": "filesystem",
                            "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
@@ -54,10 +59,6 @@ def home():
     return render_template("index.html", version=__version__)
 
 
-@app.route("/map/v4")
-def map():
-    return "In generate MAPv4 route"
-
 @app.route("/<uid>")
 def detail(uid):
     """Generates DPLA Map V4 JSON-LD"""
@@ -65,7 +66,9 @@ def detail(uid):
     DPLA_MAPv4.run(instance_iri=uri)
     if len(DPLA_MAPv4.output) < 1:
         abort(404)
-    raw_instance = DPLA_MAPv4.output.serialize(format='json-ld')
+    raw_instance = DPLA_MAPv4.output.serialize(
+        format='json-ld',
+        context=MAPv4_context)
     return Response(raw_instance, mimetype="application/json")
      
 

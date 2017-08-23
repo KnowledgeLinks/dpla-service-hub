@@ -1,0 +1,31 @@
+@prefix adms:   <http://www.w3.org/ns/adms#>.
+@prefix bc: <http://knowledgelinks.io/ns/bibcat/> .
+@prefix bf: <http://id.loc.gov/ontologies/bibframe/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dcterms: <http://purl.org/dc/terms/>. 
+@prefix dpla: <http://dp.la/about/map/> .
+@prefix edm: <http://www.europeana.eu/schemas/edm/> .
+@prefix kds: <http://knowledgelinks.io/ns/data-structures/> .
+@prefix locn: <http://www.w3.org/ns/locn#>.
+@prefix ore: <http://www.openarchives.org/ore/terms/> .
+@prefix oslo:   <http://purl.org/oslo/ns/localgov#>.
+@prefix ql:     <http://semweb.mmlab.be/ns/ql#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix relators: <http://id.loc.gov/vocabulary/relators/> .
+@prefix rml:    <http://semweb.mmlab.be/ns/rml#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+@prefix schema: <http://schema.org/> .
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+@prefix vcard:  <http://www.w3.org/2006/vcard/ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+bc:BIBFRAME2MAPv4_Aggregation rr:predicateObjectMap [
+
+        rr:predicate  edm:dataProvider ;
+        rr:objectMap [
+            rr:constant <https://plains2peaks.org/>
+        ]
+    ] .
+
