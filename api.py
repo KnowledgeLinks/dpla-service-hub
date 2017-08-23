@@ -49,7 +49,6 @@ def __run_query__(query):
         data={"query": query,
               "format": "json"})
     if result.status_code < 400:
-        print(result.json().keys())
         return result.json().get('results').get('bindings')
     
 
@@ -63,7 +62,14 @@ def home():
 def detail(uid):
     """Generates DPLA Map V4 JSON-LD"""
     uri = app.config.get("BASE_URL") + uid
-    DPLA_MAPv4.run(instance_iri=uri)
+    item_sparql = PREFIX + """
+    SELECT DISTINCT ?item
+    WHERE {{
+        ?item bf:itemOf <{instance_iri}> .
+    }}""".format(instance_iri=uri)
+    item_results = __run_query__(item_sparql)
+    item = item_results[0].get("item").get("value")
+    DPLA_MAPv4.run(instance_iri=uri, item_iri=item)
     if len(DPLA_MAPv4.output) < 1:
         abort(404)
     raw_instance = DPLA_MAPv4.output.serialize(
