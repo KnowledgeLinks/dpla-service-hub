@@ -21,6 +21,8 @@ from resync import Resource, ResourceList
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
 
+BF = rdflib.Namespace("http://id.loc.gov/ontologies/bibframe/")
+
 PROJECT_BASE =  os.path.abspath(os.path.dirname(__file__))
 PREFIX = """PREFIX bf: <http://id.loc.gov/ontologies/bibframe/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -57,6 +59,56 @@ def __run_query__(query):
 def home():
     return render_template("index.html", version=__version__)
 
+@app.route("/<path:type_of>/<path:name>")
+def authority_view(type_of, name=None):
+    """Generates a RDF:Description view for Service Hub name,
+    topic, agent, and other types of BIBFRAME entities
+
+    Args:
+        type_of(str): Type of entity
+        name(str): slug of name, title, or other textual identifier
+    """
+    if name is None:
+        # Display brows view of authorities
+        return "Browse display for {}".format(type_of)
+    uri = "{0}{1}/{2}".format(app.config.get("BASE_URL"),
+        type_of,
+        name)
+    entity_sparql = PREFIX + """
+    SELECT DISTINCT ?label ?value
+    WHERE {{
+        <{entity}> rdf:type {type_of} .
+        OPTIONAL {{
+            <{entity}> rdfs:label ?label 
+        }}
+        OPTIONAL {{
+            <{entity}> rdf:value ?value
+        }}
+    }}""".format(entity=uri,
+        type_of="bf:{}".format(type_of.title()))
+    entity_results = __run_query__(entity_sparql)
+    if len(entity_results) < 1:
+        abort(404)
+    entity_graph = rdflib.Graph()
+    iri = rdflib.URIRef(uri)
+    entity_graph.add((iri, rdflib.RDF.type, getattr(BF, type_of.title())))
+    for row in entity_results:
+        if 'label' in row:
+            literal = rdflib.Literal(row.get('label').get('value'),
+                                     datatype=row.get('label').get('datatype'))
+ 
+            entity_graph.add((iri, rdflib.RDFS.label, literal))
+        if 'value' in row:
+            literal = rdflib.Literal(row.get('value').get('value'),
+                                    datatype=row.get('value').get('datatype'))
+            entity_graph.add((iri, rdflib.RDF.value, literal))
+    MAPv4_context["bf"] = str(BF)
+    raw_entity = entity_graph.serialize(format='json-ld',
+        context=MAPv4_context)
+    return Response(raw_entity, mimetype="application/json")
+
+         
+        
 
 @app.route("/<uid>")
 def detail(uid):
