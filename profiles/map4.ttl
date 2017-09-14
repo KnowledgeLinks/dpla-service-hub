@@ -23,7 +23,7 @@
 
 bc:BIBFRAME2MAPv4_Aggregation rr:predicateObjectMap [
 
-        rr:predicate  edm:dataProvider ;
+        rr:predicate  edm:provider ;
         rr:objectMap [
             rr:constant <https://plains2peaks.org/>
         ]

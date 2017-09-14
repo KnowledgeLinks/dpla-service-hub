@@ -39,7 +39,7 @@ MAPv4_context = {"edm": "http://www.europeana.eu/schemas/edm/",
 		 "dcterms": "http://purl.org/dc/terms/",
 		 "org": "http://www.openarchives.org/ore/terms"}
 
-__version__ = "0.9.9"
+__version__ = "0.9.10"
 
 cache = Cache(app, config={"CACHE_TYPE": "filesystem",
                            "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
