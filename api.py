@@ -177,10 +177,7 @@ OFFSET {0}""".format(offset)
         last_mod = row.get("date").get("value")[0:10]
         resource_list.add(Resource(instance.get("value"),
                                    lastmod=last_mod))
-        if i >= 500:
-            xml = resource_list.as_xml()
-            break
-    #xml = render_template("sitemap_template.xml", instances=instances)
+    xml = resource_list.as_xml()
     return Response(xml, mimetype="text/xml")
 
 if __name__ == '__main__':
