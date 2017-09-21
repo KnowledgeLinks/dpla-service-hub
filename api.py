@@ -17,6 +17,7 @@ import bibcat.rml.processor as processor
 from flask import abort, Flask, jsonify, request, render_template, Response
 from flask_cache import Cache
 from resync import Resource, ResourceList
+from resync.resource_list import ResourceListDupeError
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
@@ -58,6 +59,31 @@ def __run_query__(query):
 @app.route("/")
 def home():
     return render_template("index.html", version=__version__)
+
+
+@app.route("/<uid>")
+def detail(uid=None):
+    """Generates DPLA Map V4 JSON-LD"""
+    if uid.startswith('favicon'):
+        return ''
+    if uid is None:
+        abort(404)
+    uri = app.config.get("BASE_URL") + uid
+    item_sparql = PREFIX + """
+    SELECT DISTINCT ?item
+    WHERE {{
+        ?item bf:itemOf <{instance_iri}> .
+    }}""".format(instance_iri=uri)
+    item_results = __run_query__(item_sparql)
+    item = item_results[0].get("item").get("value")
+    DPLA_MAPv4.run(instance_iri=uri, item_iri=item)
+    if len(DPLA_MAPv4.output) < 1:
+        abort(404)
+    raw_instance = DPLA_MAPv4.output.serialize(
+        format='json-ld',
+        context=MAPv4_context)
+    return Response(raw_instance, mimetype="application/json")
+
 
 @app.route("/<path:type_of>/<path:name>")
 def authority_view(type_of, name=None):
@@ -110,24 +136,6 @@ def authority_view(type_of, name=None):
          
         
 
-@app.route("/<uid>")
-def detail(uid):
-    """Generates DPLA Map V4 JSON-LD"""
-    uri = app.config.get("BASE_URL") + uid
-    item_sparql = PREFIX + """
-    SELECT DISTINCT ?item
-    WHERE {{
-        ?item bf:itemOf <{instance_iri}> .
-    }}""".format(instance_iri=uri)
-    item_results = __run_query__(item_sparql)
-    item = item_results[0].get("item").get("value")
-    DPLA_MAPv4.run(instance_iri=uri, item_iri=item)
-    if len(DPLA_MAPv4.output) < 1:
-        abort(404)
-    raw_instance = DPLA_MAPv4.output.serialize(
-        format='json-ld',
-        context=MAPv4_context)
-    return Response(raw_instance, mimetype="application/json")
      
 
 @app.route("/siteindex.xml")
@@ -163,22 +171,28 @@ def sitemap(offset=0):
 
 SELECT DISTINCT ?instance ?date
 WHERE {{
-    ?instance rdf:type bf:Instance .
-    ?instance bf:generationProcess ?process .
-    ?process bf:generationDate ?date .
     ?item bf:itemOf ?instance .
+    ?item bf:generationProcess ?process .
+    ?process bf:generationDate ?date .
 }} ORDER BY ?instance
 LIMIT 50000
 OFFSET {0}""".format(offset)
     instances = __run_query__(sparql)
     resource_list = ResourceList()
+    dedups = 0
     for i,row in enumerate(instances):
         instance = row.get('instance')
         last_mod = row.get("date").get("value")[0:10]
-        resource_list.add(Resource(instance.get("value"),
-                                   lastmod=last_mod))
+        try:
+            resource_list.add(
+                Resource(instance.get("value"),
+                lastmod=last_mod))
+        except ResourceListDupeError:
+            dedups += 1
+            continue
+    print("Deduped {:,}".format(dedups))
     xml = resource_list.as_xml()
     return Response(xml, mimetype="text/xml")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
