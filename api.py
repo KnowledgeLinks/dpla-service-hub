@@ -171,9 +171,11 @@ def sitemap(offset=0):
 
 SELECT DISTINCT ?instance ?date
 WHERE {{
-    ?item bf:itemOf ?instance .
-    ?item bf:generationProcess ?process .
-    ?process bf:generationDate ?date .
+    ?instance rdf:type bf:Instance .
+    OPTIONAL {{ 
+        ?instance bf:generationProcess ?process .
+        ?process bf:generationDate ?date .
+    }}
 }} ORDER BY ?instance
 LIMIT 50000
 OFFSET {0}""".format(offset)
@@ -182,7 +184,11 @@ OFFSET {0}""".format(offset)
     dedups = 0
     for i,row in enumerate(instances):
         instance = row.get('instance')
-        last_mod = row.get("date").get("value")[0:10]
+        if "date" in row:
+            last_mod = row.get("date").get("value")[0:10]
+        else:
+            last_mod = datetime.datetime.utcnow().strftime(
+                "%Y-%m-%dT00:00:00Z")
         try:
             resource_list.add(
                 Resource(instance.get("value"),
