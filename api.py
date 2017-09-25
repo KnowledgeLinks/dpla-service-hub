@@ -18,6 +18,7 @@ from flask import abort, Flask, jsonify, request, render_template, Response
 from flask_cache import Cache
 from resync import Resource, ResourceList
 from resync.resource_list import ResourceListDupeError
+from resync.dump import Dump
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
@@ -54,26 +55,35 @@ def __run_query__(query):
     if result.status_code < 400:
         return result.json().get('results').get('bindings')
     
+def __get_instances__(offset=0):
+    """Helper function used by siteindex and resourcedump views
+
+    Args:
+        offset(int): offset number of records
+    """
+    offset = (int(offset)*50000) - 50000
+    sparql = PREFIX + """
+
+SELECT DISTINCT ?instance ?date
+WHERE {{
+    ?instance rdf:type bf:Instance .
+    OPTIONAL {{ 
+        ?instance bf:generationProcess ?process .
+        ?process bf:generationDate ?date .
+    }}
+}} ORDER BY ?instance
+LIMIT 50000
+OFFSET {0}""".format(offset)
+    instances = __run_query__(sparql)
+    return instances
 
 
-@app.route("/")
-def home():
-    return render_template("index.html", version=__version__)
-
-
-@app.route("/<uid>")
-def detail(uid=None):
-    """Generates DPLA Map V4 JSON-LD"""
-    if uid.startswith('favicon'):
-        return ''
-    if uid is None:
-        abort(404)
-    uri = app.config.get("BASE_URL") + uid
+def __generate_profile__(instance_uri):
     item_sparql = PREFIX + """
     SELECT DISTINCT ?item
     WHERE {{
         ?item bf:itemOf <{instance_iri}> .
-    }}""".format(instance_iri=uri)
+    }}""".format(instance_iri=instance_uri)
     item_results = __run_query__(item_sparql)
     item = item_results[0].get("item").get("value")
     DPLA_MAPv4.run(instance_iri=uri, item_iri=item)
@@ -82,8 +92,67 @@ def detail(uid=None):
     raw_instance = DPLA_MAPv4.output.serialize(
         format='json-ld',
         context=MAPv4_context)
-    return Response(raw_instance, mimetype="application/json")
+    return raw_instance
 
+
+def __generate_resource_dump__():
+    r_dump = ResourceDump()
+    r_dump.ln.append({"rel": "resourcesync",
+                      "href": url_for(capability_list)})
+
+    bindings = __run_query__(PREFIX + """
+SELECT (count(?s) as ?count) WHERE {
+   ?s rdf:type bf:Instance .
+   ?item bf:itemOf ?s .
+}""")
+    count = int(bindings[0].get('count').get('value'))
+    shards = math.ceil(count/50000)
+    for i in range(0, shards):
+        zip_info = __generate_zipfile__(i)
+        r_dump.add( 
+            Resource(url_for(resource_zip, offset=1),
+                     lastmod=zip_info.get('date'),
+                     type="application/zip",
+                     length=zip_info.get("size")
+            )
+        )
+    return r_dump
+
+def __generate_zip_file__(offset=0):
+    manifest = ResourceDumpManifest()
+    manifest.modified = datetime.datetime.utcnow().isoformat()
+    manifest.ln.append({"rel": "resourcesync",
+                        "href": url_for(capability_list)})
+    dump_zip = ZipFile(tmp_location,
+                       mode="w",
+                       compression=zipfile.ZIP_DEFLATED,
+                       allowZip64=True)
+    instances = __get_instances__(offset)
+    for row in instances:
+        instance_iri = row.get("instance").get('value')
+        key = instance_iri.split("/")[-1]
+        if not "date" in row:
+            last_mod = app.config.get('MOD_DATE')
+        else:
+            last_mod = row.get("date").get("value")
+        path = "/resources/{}".format(key)
+        raw_json = __generate_profile__(instance_iri)
+        dump_zip.writestr(path,
+                          raw_json)
+        manifest.add(
+            Resource(instance_iri,
+                     lastmod=last_mod,
+                     length="{}".format(len(raw_json)),
+                     type="application/json",
+                     path=path))
+    dump_zip.writestr("manifest.xml", manifest.as_xml())
+    dump_zip.close()
+    return dump_zip
+
+
+@app.route("/")
+def home():
+    return render_template("index.html", version=__version__)
 
 @app.route("/<path:type_of>/<path:name>")
 def authority_view(type_of, name=None):
@@ -133,10 +202,19 @@ def authority_view(type_of, name=None):
         context=MAPv4_context)
     return Response(raw_entity, mimetype="application/json")
 
-         
-        
-
-     
+@app.route("/capabilitylist.xml")
+def capability_list():
+    cap_list = CapabilityList()
+    cap_list.modified = __get_mod_data__()
+    cap_list.ln.append({"href": url_for(capability_list),
+                        "rel": "describedby",
+                        "type": "application/xml"})
+    cap_list.add(Resource(url_for(site_index),
+                          capability="resourcelist"))
+    cap_list.add(Resource(url_for(resource_dump),
+                          capability="resourcedump"))
+    return Response(cap_list.as_xml,
+                    mimetype="text/xml")
 
 @app.route("/siteindex.xml")
 #@cache.cached(timeout=86400) # Cached for 1 day
@@ -154,32 +232,22 @@ SELECT (count(?s) as ?count) WHERE {
     mod_date = app.config.get('MOD_DATE')
     if mod_date is None:
         mod_date=datetime.datetime.utcnow().strftime("%Y-%m-%d")
-    
-    #for row in bindings:
-        #resource_list.add(
-        #    Resource(
     xml = render_template("siteindex.xml", 
             count=range(1, shards+1), 
             last_modified=mod_date)
     return Response(xml, mimetype="text/xml")
 
+@app.route("/resourcedump")
+def resource_dump():
+    # Create a ZIP file for each 
+    return Response(r_dump.as_xml(),
+            "text/xml")
+
+
 @app.route("/sitemap<offset>.xml", methods=["GET"])
 #@cache.cached(timeout=86400)
 def sitemap(offset=0):
-    offset = (int(offset)*50000) - 50000
-    sparql = PREFIX + """
-
-SELECT DISTINCT ?instance ?date
-WHERE {{
-    ?instance rdf:type bf:Instance .
-    OPTIONAL {{ 
-        ?instance bf:generationProcess ?process .
-        ?process bf:generationDate ?date .
-    }}
-}} ORDER BY ?instance
-LIMIT 50000
-OFFSET {0}""".format(offset)
-    instances = __run_query__(sparql)
+    instances = __get_instances__(offset)
     resource_list = ResourceList()
     dedups = 0
     for i,row in enumerate(instances):
@@ -191,14 +259,26 @@ OFFSET {0}""".format(offset)
                 "%Y-%m-%dT00:00:00Z")
         try:
             resource_list.add(
-                Resource(instance.get("value"),
-                lastmod=last_mod))
+                Resource("{}.json".format(instance.get("value")),
+                         lastmod=last_mod)
+            )
         except ResourceListDupeError:
             dedups += 1
             continue
-    print("Deduped {:,}".format(dedups))
     xml = resource_list.as_xml()
-    return Response(xml, mimetype="text/xml")
+    return Response(xml, "text/xml")
+
+@app.route("/<uid>.json")
+def detail(uid=None):
+    """Generates DPLA Map V4 JSON-LD"""
+    if uid.startswith('favicon'):
+        return ''
+    if uid is None:
+        abort(404)
+    uri = app.config.get("BASE_URL") + uid
+    raw_instance = __generate_profile__(uri)
+    return Response(raw_instance, mimetype="application/json")
+   
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
