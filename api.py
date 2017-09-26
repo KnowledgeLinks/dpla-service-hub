@@ -14,9 +14,14 @@ import urllib.parse
 
 import bibcat.rml.processor as processor
 
+from zipfile import ZipFile, ZIP_DEFLATED
+
 from flask import abort, Flask, jsonify, request, render_template, Response
+from flask import url_for
 from flask_cache import Cache
-from resync import Resource, ResourceList
+from resync import CapabilityList, ResourceDump, ResourceDumpManifest
+from resync import ResourceList
+from resync.resource import Resource
 from resync.resource_list import ResourceListDupeError
 from resync.dump import Dump
 
@@ -41,7 +46,8 @@ MAPv4_context = {"edm": "http://www.europeana.eu/schemas/edm/",
 		 "dcterms": "http://purl.org/dc/terms/",
 		 "org": "http://www.openarchives.org/ore/terms"}
 
-__version__ = "0.9.10"
+W3C_DATE = "%Y-%m-%dT%H:%M:%SZ"
+__version__ = "0.9.11"
 
 cache = Cache(app, config={"CACHE_TYPE": "filesystem",
                            "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
@@ -61,7 +67,7 @@ def __get_instances__(offset=0):
     Args:
         offset(int): offset number of records
     """
-    offset = (int(offset)*50000) - 50000
+    offset = int(offset)*50000
     sparql = PREFIX + """
 
 SELECT DISTINCT ?instance ?date
@@ -78,6 +84,13 @@ OFFSET {0}""".format(offset)
     return instances
 
 
+def __get_mod_date__(entity_iri=None):
+    if "MOD_DATE" in app.config:
+        return app.config.get("MOD_DATE")
+    return datetime.datetime.utcnow().strftime(W3C_DATE)
+
+
+
 def __generate_profile__(instance_uri):
     item_sparql = PREFIX + """
     SELECT DISTINCT ?item
@@ -86,7 +99,8 @@ def __generate_profile__(instance_uri):
     }}""".format(instance_iri=instance_uri)
     item_results = __run_query__(item_sparql)
     item = item_results[0].get("item").get("value")
-    DPLA_MAPv4.run(instance_iri=uri, item_iri=item)
+    DPLA_MAPv4.run(instance_iri=instance_uri, 
+                   item_iri=item)
     if len(DPLA_MAPv4.output) < 1:
         abort(404)
     raw_instance = DPLA_MAPv4.output.serialize(
@@ -98,7 +112,7 @@ def __generate_profile__(instance_uri):
 def __generate_resource_dump__():
     r_dump = ResourceDump()
     r_dump.ln.append({"rel": "resourcesync",
-                      "href": url_for(capability_list)})
+                      "href": url_for('capability_list')})
 
     bindings = __run_query__(PREFIX + """
 SELECT (count(?s) as ?count) WHERE {
@@ -108,9 +122,10 @@ SELECT (count(?s) as ?count) WHERE {
     count = int(bindings[0].get('count').get('value'))
     shards = math.ceil(count/50000)
     for i in range(0, shards):
-        zip_info = __generate_zipfile__(i)
+        zip_info = __generate_zip_file__(i)
         r_dump.add( 
-            Resource(url_for(resource_zip, offset=1),
+            Resource(url_for('resource_zip', 
+                             offset=i*50000),
                      lastmod=zip_info.get('date'),
                      type="application/zip",
                      length=zip_info.get("size")
@@ -122,20 +137,28 @@ def __generate_zip_file__(offset=0):
     manifest = ResourceDumpManifest()
     manifest.modified = datetime.datetime.utcnow().isoformat()
     manifest.ln.append({"rel": "resourcesync",
-                        "href": url_for(capability_list)})
+                        "href": url_for('capability_list')})
+    file_name = "{}-{:03}.zip".format(
+                               datetime.datetime.utcnow().toordinal(),
+                               offset)
+    tmp_location = os.path.join(PROJECT_BASE, 
+                                "dump/{}".format(file_name))
+    if os.path.exists(tmp_location) is True:
+        return {"date": os.path.getmtime(tmp_location),
+                "size": os.path.getsize(tmp_location)}
     dump_zip = ZipFile(tmp_location,
                        mode="w",
-                       compression=zipfile.ZIP_DEFLATED,
+                       compression=ZIP_DEFLATED,
                        allowZip64=True)
     instances = __get_instances__(offset)
     for row in instances:
         instance_iri = row.get("instance").get('value')
         key = instance_iri.split("/")[-1]
         if not "date" in row:
-            last_mod = app.config.get('MOD_DATE')
+            last_mod = __get_mod_date__()
         else:
-            last_mod = row.get("date").get("value")
-        path = "/resources/{}".format(key)
+            last_mod = "{}Z".format(row.get("date").get("value"))
+        path = "/resources/{}.json".format(key)
         raw_json = __generate_profile__(instance_iri)
         dump_zip.writestr(path,
                           raw_json)
@@ -143,11 +166,11 @@ def __generate_zip_file__(offset=0):
             Resource(instance_iri,
                      lastmod=last_mod,
                      length="{}".format(len(raw_json)),
-                     type="application/json",
                      path=path))
     dump_zip.writestr("manifest.xml", manifest.as_xml())
     dump_zip.close()
-    return dump_zip
+    return {"date": datetime.datetime.utcnow().isoformat(), 
+            "size": len(dump_zip)} 
 
 
 @app.route("/")
@@ -205,16 +228,37 @@ def authority_view(type_of, name=None):
 @app.route("/capabilitylist.xml")
 def capability_list():
     cap_list = CapabilityList()
-    cap_list.modified = __get_mod_data__()
-    cap_list.ln.append({"href": url_for(capability_list),
+    cap_list.modified = __get_mod_date__()
+    cap_list.ln.append({"href": url_for('capability_list'),
                         "rel": "describedby",
                         "type": "application/xml"})
-    cap_list.add(Resource(url_for(site_index),
+    cap_list.add(Resource(url_for('site_index'),
                           capability="resourcelist"))
-    cap_list.add(Resource(url_for(resource_dump),
+    cap_list.add(Resource(url_for('resource_dump'),
                           capability="resourcedump"))
-    return Response(cap_list.as_xml,
+    return Response(cap_list.as_xml(),
                     mimetype="text/xml")
+
+@app.route("/reports")
+@app.route("/reports/<path:name>")
+def reporting(name=None):
+    """Generates various reports based on live triplestore"""
+    if name is None:
+        return render_template("reports.html")
+
+@app.route("/resourcedump.xml")
+def resource_dump():
+    xml = __generate_resource_dump__()
+    return Response(xml,
+            "text/xml")
+
+@app.route("/resourcedump-<int:count>.zip")
+def resource_zip(count):
+    zip_location = os.path.join(PROJECT_BASE, 
+        "dump/{}.zip".format(count))
+    if not os.path.exists(zip_location):
+        abort(404)
+    return send_file(zip_location)
 
 @app.route("/siteindex.xml")
 #@cache.cached(timeout=86400) # Cached for 1 day
@@ -237,13 +281,6 @@ SELECT (count(?s) as ?count) WHERE {
             last_modified=mod_date)
     return Response(xml, mimetype="text/xml")
 
-@app.route("/resourcedump")
-def resource_dump():
-    # Create a ZIP file for each 
-    return Response(r_dump.as_xml(),
-            "text/xml")
-
-
 @app.route("/sitemap<offset>.xml", methods=["GET"])
 #@cache.cached(timeout=86400)
 def sitemap(offset=0):
@@ -256,7 +293,7 @@ def sitemap(offset=0):
             last_mod = row.get("date").get("value")[0:10]
         else:
             last_mod = datetime.datetime.utcnow().strftime(
-                "%Y-%m-%dT00:00:00Z")
+                W3C_DATE)
         try:
             resource_list.add(
                 Resource("{}.json".format(instance.get("value")),
