@@ -134,6 +134,8 @@ SELECT (count(?s) as ?count) WHERE {
     return r_dump
 
 def __generate_zip_file__(offset=0):
+    start = datetime.datetime.utcnow()
+    print("Started at {}".format(start.ctime()))
     manifest = ResourceDumpManifest()
     manifest.modified = datetime.datetime.utcnow().isoformat()
     manifest.ln.append({"rel": "resourcesync",
@@ -151,7 +153,7 @@ def __generate_zip_file__(offset=0):
                        compression=ZIP_DEFLATED,
                        allowZip64=True)
     instances = __get_instances__(offset)
-    for row in instances:
+    for i,row in enumerate(instances):
         instance_iri = row.get("instance").get('value')
         key = instance_iri.split("/")[-1]
         if not "date" in row:
@@ -167,8 +169,17 @@ def __generate_zip_file__(offset=0):
                      lastmod=last_mod,
                      length="{}".format(len(raw_json)),
                      path=path))
+        if not i%25 and i > 0:
+            print(".", end="")
+        if not i%100:
+            print("{:,}".format(i), end="")
     dump_zip.writestr("manifest.xml", manifest.as_xml())
     dump_zip.close()
+    end = datetime.datetime.utcnow()
+    print("Finished at {}, total time {} min, size={}".format(
+        end.ctime(),
+        (end-start).seconds / 60.0,
+        i))
     return {"date": datetime.datetime.utcnow().isoformat(), 
             "size": len(dump_zip)} 
 
