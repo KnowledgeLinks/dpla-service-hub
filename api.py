@@ -292,9 +292,11 @@ SELECT (count(?s) as ?count) WHERE {
             last_modified=mod_date)
     return Response(xml, mimetype="text/xml")
 
-@app.route("/sitemap<offset>.xml", methods=["GET"])
+@app.route("/sitemap<int:offset>.xml", methods=["GET"])
 #@cache.cached(timeout=86400)
 def sitemap(offset=0):
+    if offset > 0:
+        offset = offset - 1
     instances = __get_instances__(offset)
     resource_list = ResourceList()
     dedups = 0
