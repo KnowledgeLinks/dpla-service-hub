@@ -37,7 +37,7 @@ PREFIX relators: <http://id.loc.gov/vocabulary/relators/>
 PREFIX schema: <http://schema.org/>
 """
 
-DPLA_MAPv4 = processor.SPARQLProcessor(
+DPLA_MAPv4 = processor.SPARQLBatchProcessor(
         triplestore_url=app.config.get("TRIPLESTORE_URL"),
         rml_rules=["bf-to-map4.ttl", 
             "{}/profiles/map4.ttl".format(PROJECT_BASE)])
