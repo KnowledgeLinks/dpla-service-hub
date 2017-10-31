@@ -113,6 +113,7 @@ def __generate_profile__(instance_uri):
                          "dcterms:alternative",
                          "dcterms:identifier",
                          "dc:date",
+                         "dcterms:language",
                          "dcterms:creator",
                          "dcterms:extent",
                          "dcterms:subject"]                         
