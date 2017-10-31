@@ -106,7 +106,23 @@ def __generate_profile__(instance_uri):
     raw_instance = DPLA_MAPv4.output.serialize(
         format='json-ld',
         context=MAPv4_context)
-    return raw_instance
+    instance = json.loads(raw_instance)
+    # Post-processing to change certain properties to be
+    # a Python list instead of a single literal or URI
+    json_array_fields = ["dcterms:title",
+                         "dcterms:alternative",
+                         "dcterms:identifier",
+                         "dc:date",
+                         "dcterms:creator",
+                         "dcterms:extent",
+                         "dcterms:subject"]                         
+    for entity in instance.get('@graph'):
+        for field in json_array_fields:
+            if field in entity and not isinstance(entity.get(field), list):
+                org_value = entity.get(field)
+                entity[field] = [org_value,]
+    
+    return json.dumps(instance)
 
 
 def __generate_resource_dump__():
