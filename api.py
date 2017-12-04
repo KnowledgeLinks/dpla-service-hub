@@ -333,7 +333,7 @@ def sitemap(offset=0):
             dedups += 1
             continue
     xml = resource_list.as_xml()
-    return Response(xml, "text/xml")
+    return Response(xml, mimetype="text/xml")
 
 @app.route("/<uid>.json")
 def detail(uid=None):
