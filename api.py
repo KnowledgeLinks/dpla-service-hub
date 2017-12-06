@@ -98,6 +98,8 @@ def __generate_profile__(instance_uri):
         ?item bf:itemOf <{instance_iri}> .
     }}""".format(instance_iri=instance_uri)
     item_results = __run_query__(item_sparql)
+    if len(item_results) < 1:
+        abort(404)
     item = item_results[0].get("item").get("value")
     DPLA_MAPv4.run(instance_iri=instance_uri, 
                    item_iri=item)
@@ -106,7 +108,6 @@ def __generate_profile__(instance_uri):
     raw_instance = DPLA_MAPv4.output.serialize(
         format='json-ld',
         context=MAPv4_context)
-    print(raw_instance)
     instance = json.loads(str(raw_instance))
     # Post-processing to change certain properties to be
     # a Python list instead of a single literal or URI
