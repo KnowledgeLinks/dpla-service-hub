@@ -108,6 +108,7 @@ def __generate_profile__(instance_uri):
     raw_instance = DPLA_MAPv4.output.serialize(
         format='json-ld',
         context=MAPv4_context)
+    raise ValueError(raw_instance)
     instance = json.loads(str(raw_instance))
     # Post-processing to change certain properties to be
     # a Python list instead of a single literal or URI
