@@ -113,6 +113,8 @@ def authority_view(type_of, name=None):
 @app.route("/<uid>")
 def detail(uid):
     """Generates DPLA Map V4 JSON-LD"""
+    if uid.endswith("favicon.ico"):
+        return ''
     uri = app.config.get("BASE_URL") + uid
     item_sparql = PREFIX + """
     SELECT DISTINCT ?item
