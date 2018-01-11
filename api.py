@@ -50,7 +50,8 @@ MAPv4_context = {"edm": "http://www.europeana.eu/schemas/edm/",
 		 "org": "http://www.openarchives.org/ore/terms"}
 
 W3C_DATE = "%Y-%m-%dT%H:%M:%SZ"
-__version__ = "0.9.11"
+
+__version__ = "0.9.12"
 
 cache = Cache(app, config={"CACHE_TYPE": "filesystem",
                            "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
