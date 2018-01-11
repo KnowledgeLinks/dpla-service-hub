@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    <h1>Plains2Peaks.org Pilot</h1>
+    <h2>Institution Counts</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Institution</th>
+                <th>URL</th>
+                <th>Instances</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data.institutions %}
+            <tr>
+                <td>{{ row.label }}</td>
+                <td><a href="{{ row.url }}">{{ row.url }}</a></td>
+                <td>{{ row.count|pretty_num }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="2">Totals:</td>
+                <th>
+                    {{ data.total|pretty_num }}
+                </th>
+        
+        </tbody>
+    </table>
+<hr>
+<h2>SPARQL Query</h2>
+<pre>
+PREFIX bf: <http://id.loc.gov/ontologies/bibframe/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX relators: <http://id.loc.gov/vocabulary/relators/>
+PREFIX schema: <http://schema.org/>
+
+SELECT ?institution (count(?instance) as ?instance_count)
+WHERE {
+     ?instance rdf:type bf:Instance .
+     ?item bf:itemOf ?instance ;
+           bf:heldBy ?institution .
+
+} GROUP BY ?institution
+
+</pre>
+{% endblock %}

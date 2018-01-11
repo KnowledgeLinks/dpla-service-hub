@@ -12,12 +12,15 @@ import requests
 import rdflib
 import urllib.parse
 
+import reports
 import bibcat.rml.processor as processor
 
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from flask import abort, Flask, jsonify, request, render_template, Response
-from flask import url_for
+from flask import flash, url_for
+from flask import flash
+
 from flask_cache import Cache
 from resync import CapabilityList, ResourceDump, ResourceDumpManifest
 from resync import ResourceList
@@ -204,10 +207,35 @@ def __generate_zip_file__(offset=0):
     return {"date": datetime.datetime.utcnow().isoformat(), 
             "size": len(dump_zip)} 
 
+@app.template_filter("pretty_num")
+def nice_number(raw_number):
+    if raw_number is None:
+        return ''
+    return "{:,}".format(int(raw_number))
 
 @app.route("/")
 def home():
-    return render_template("index.html", version=__version__)
+    """Default page"""
+    result = __run_query__("SELECT (COUNT(*) as ?count) WHERE {?s ?p ?o }")
+    count = result[0].get("count").get("value")
+    if int(count) < 1:
+        flash("Triplestore is empty, please load service hub RDF data")
+    return render_template("index.html", 
+        version=__version__, 
+        count="{:,}".format(int(count)))
+
+@app.route("/reports/")
+@app.route("/reports/<path:name>")
+def reporting(name=None):
+    if name is None:
+        return render_template("reports/index.html")
+    report_output = reports.report_router(name)
+    if report_output is None:
+        abort(404)
+    return render_template(
+        "reports/{0}.html".format(name),
+        data=report_output)
+        
 
 @app.route("/<path:type_of>/<path:name>")
 def authority_view(type_of, name=None):
@@ -271,12 +299,6 @@ def capability_list():
     return Response(cap_list.as_xml(),
                     mimetype="text/xml")
 
-@app.route("/reports")
-@app.route("/reports/<path:name>")
-def reporting(name=None):
-    """Generates various reports based on live triplestore"""
-    if name is None:
-        return render_template("reports.html")
 
 @app.route("/resourcedump.xml")
 def resource_dump():
