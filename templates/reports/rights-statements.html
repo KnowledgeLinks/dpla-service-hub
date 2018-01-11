@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    <h1>Plains2Peaks.org Pilot</h1>
+    <h2>Right Statements Breakdown</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Right Statement</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td>{{ row.url }}</td>
+                <td>{{ row.count|pretty_num }}</td>
+            </tr>
+            {% endfor %}`
+        </tbody>
+    </table>
+<hr>
+<h2>SPARQL Query</h2>
+<pre>
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX bf: &lt;http://id.loc.gov/ontologies/bibframe/&gt;
+
+SELECT ?rights_statement (count(?item) as ?count) WHERE{
+  ?item rdf:type bf:Item ;
+  OPTIONAL { ?item bf:AccessPolicy ?rights_statement }
+  OPTIONAL { ?item bf:usageAndAccessPolicy ?rights_statement }
+  
+} GROUP BY ?rights_statement
+
+
+</pre>
+{% endblock %}

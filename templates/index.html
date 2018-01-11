@@ -1,32 +1,11 @@
-<!DOCTYPE html>
-<head>
-    <meta charset="UTF-8">
-    <title>DPLA Service Hub version {{ version }}</title>
-    <style>
-        body {
-            font: 1.75em "Open Sans", sans-serif; 
-        }
+{% extends 'base.html' %}
 
-        footer {
-            font-size: .75em;
-            background-color: rgb(192,192,192);
-            padding: 1em;
-        }
-    </style>
-</head>
-<body>
-    <h1>Plains2Peaks</h1>
-    <h3>DPLA Service Hub version: {{ version }}</h3>
-    <ul>
-        <li><a href="https://dp.la/info/developers/map/">DPLA v.4 MAP</a></li>
-        <li><a href="{{ url_for('site_index') }}">ResourceSync Sitemap Index</a></li>
-    </ul>
-
-<footer>
-    Code Repository available on Github at 
-    <a href="https://github.com/KnowledgeLinks/dpla-service-hub">
-        https://github.com/KnowledgeLinks/dpla-service-hub
-    </a>. Technology by <a href="http://knowledgelinks.io">KnowledgeLinks.io</a> 
-</footer> 
-</body>
-</html>
+{% block main %}
+<h1>Plains2Peaks</h1>
+<h3>DPLA Service Hub version: {{ version }}, triples: {{ count }}</h3>
+<ul>
+    <li><a href="https://dp.la/info/developers/map/">DPLA v.4 MAP</a></li>
+    <li><a href="{{ url_for('site_index') }}">ResourceSync Sitemap Index</a></li>
+    <li><a href="{{ url_for('reporting') }}">Reports</a></li>
+</ul>
+{% endblock %}

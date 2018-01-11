@@ -12,9 +12,11 @@ import requests
 import rdflib
 import urllib.parse
 
+import reports
 import bibcat.rml.processor as processor
 
 from flask import abort, Flask, jsonify, request, render_template, Response
+from flask import flash
 from flask_cache import Cache
 from resync import Resource, ResourceList
 
@@ -39,7 +41,7 @@ MAPv4_context = {"edm": "http://www.europeana.eu/schemas/edm/",
 		 "dcterms": "http://purl.org/dc/terms/",
 		 "org": "http://www.openarchives.org/ore/terms"}
 
-__version__ = "0.9.10"
+__version__ = "0.9.11"
 
 cache = Cache(app, config={"CACHE_TYPE": "filesystem",
                            "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
@@ -53,11 +55,35 @@ def __run_query__(query):
     if result.status_code < 400:
         return result.json().get('results').get('bindings')
     
-
+@app.template_filter("pretty_num")
+def nice_number(raw_number):
+    if raw_number is None:
+        return ''
+    return "{:,}".format(int(raw_number))
 
 @app.route("/")
 def home():
-    return render_template("index.html", version=__version__)
+    """Default page"""
+    result = __run_query__("SELECT (COUNT(*) as ?count) WHERE {?s ?p ?o }")
+    count = result[0].get("count").get("value")
+    if int(count) < 1:
+        flash("Triplestore is empty, please load service hub RDF data")
+    return render_template("index.html", 
+        version=__version__, 
+        count="{:,}".format(int(count)))
+
+@app.route("/reports/")
+@app.route("/reports/<path:name>")
+def reporting(name=None):
+    if name is None:
+        return render_template("reports/index.html")
+    report_output = reports.report_router(name)
+    if report_output is None:
+        abort(404)
+    return render_template(
+        "reports/{0}.html".format(name),
+        data=report_output)
+        
 
 @app.route("/<path:type_of>/<path:name>")
 def authority_view(type_of, name=None):

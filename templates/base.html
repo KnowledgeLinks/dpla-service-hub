@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>DPLA Service Hub version {{ version }}</title>
+    <style>
+        body {
+            font: 1.75em "Open Sans", sans-serif; 
+        }
+
+        footer {
+            font-size: .75em;
+            background-color: rgb(192,192,192);
+            padding: 1em;
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div>
+            <h2 style="color: red">ALERT!</h2>
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    {% endwith %}
+    {% block main %}
+    {% endblock %}
+<footer>
+    Code Repository available on Github at 
+    <a href="https://github.com/KnowledgeLinks/dpla-service-hub">
+        https://github.com/KnowledgeLinks/dpla-service-hub
+    </a>. Technology by <a href="http://knowledgelinks.io">KnowledgeLinks.io</a> 
+</footer> 
+</body>
+</html>

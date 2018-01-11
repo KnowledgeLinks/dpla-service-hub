@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<h1>Reports</h1>
+<ul>
+    <li>
+        <a href="{{ url_for('reporting', name='institution-count') }}">BIBFRAME Instances by Institution</a>
+    </li>
+    <li>
+        BIBFRAME Items by <a href="{{ url_for('reporting', name='rights-statements') }}">Rights Statements</a>
+    </li>
+
+</ul>
+
+{% endblock %}
