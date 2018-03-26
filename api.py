@@ -42,11 +42,11 @@ PREFIX schema: <http://schema.org/>
 
 DPLA_MAPv4 = processor.SPARQLBatchProcessor(
         triplestore_url=app.config.get("TRIPLESTORE_URL"),
-        rml_rules=["bf-to-map4.ttl", 
+        rml_rules=["bf-to-map4.ttl",
             "{}/profiles/map4.ttl".format(PROJECT_BASE)])
 
 MAPv4_context = {"edm": "http://www.europeana.eu/schemas/edm/",
-		 "dcterms": "http://purl.org/dc/terms/",
+		 "dcterm": "http://purl.org/dc/terms/",
 		 "org": "http://www.openarchives.org/ore/terms"}
 
 W3C_DATE = "%Y-%m-%dT%H:%M:%SZ"
@@ -64,7 +64,7 @@ def __run_query__(query):
               "format": "json"})
     if result.status_code < 400:
         return result.json().get('results').get('bindings')
-    
+
 def __get_instances__(offset=0):
     """Helper function used by siteindex and resourcedump views
 
@@ -77,7 +77,7 @@ def __get_instances__(offset=0):
 SELECT DISTINCT ?instance ?date
 WHERE {{
     ?instance rdf:type bf:Instance .
-    OPTIONAL {{ 
+    OPTIONAL {{
         ?instance bf:generationProcess ?process .
         ?process bf:generationDate ?date .
     }}
@@ -105,7 +105,7 @@ def __generate_profile__(instance_uri):
     if len(item_results) < 1:
         abort(404)
     item = item_results[0].get("item").get("value")
-    DPLA_MAPv4.run(instance_iri=instance_uri, 
+    DPLA_MAPv4.run(instance_iri=instance_uri,
                    item_iri=item)
     if len(DPLA_MAPv4.output) < 1:
         abort(404)
@@ -117,20 +117,20 @@ def __generate_profile__(instance_uri):
     instance = json.loads(raw_instance)
     # Post-processing to change certain properties to be
     # a Python list instead of a single literal or URI
-    json_array_fields = ["dcterms:title",
-                         "dcterms:alternative",
-                         "dcterms:identifier",
+    json_array_fields = ["dcterm:title",
+                         "dcterm:alternative",
+                         "dcterm:identifier",
                          "dc:date",
-                         "dcterms:language",
-                         "dcterms:creator",
-                         "dcterms:extent",
-                         "dcterms:subject"]                         
+                         "dcterm:language",
+                         "dcterm:creator",
+                         "dcterm:extent",
+                         "dcterm:subject"]
     for entity in instance.get('@graph'):
         for field in json_array_fields:
             if field in entity and not isinstance(entity.get(field), list):
                 org_value = entity.get(field)
                 entity[field] = [org_value,]
-    
+
     return json.dumps(instance)
 
 
@@ -148,8 +148,8 @@ SELECT (count(?s) as ?count) WHERE {
     shards = math.ceil(count/50000)
     for i in range(0, shards):
         zip_info = __generate_zip_file__(i)
-        r_dump.add( 
-            Resource(url_for('resource_zip', 
+        r_dump.add(
+            Resource(url_for('resource_zip',
                              offset=i*50000),
                      lastmod=zip_info.get('date'),
                      type="application/zip",
@@ -168,7 +168,7 @@ def __generate_zip_file__(offset=0):
     file_name = "{}-{:03}.zip".format(
                                datetime.datetime.utcnow().toordinal(),
                                offset)
-    tmp_location = os.path.join(PROJECT_BASE, 
+    tmp_location = os.path.join(PROJECT_BASE,
                                 "dump/{}".format(file_name))
     if os.path.exists(tmp_location) is True:
         return {"date": os.path.getmtime(tmp_location),
@@ -205,8 +205,8 @@ def __generate_zip_file__(offset=0):
         end.ctime(),
         (end-start).seconds / 60.0,
         i))
-    return {"date": datetime.datetime.utcnow().isoformat(), 
-            "size": len(dump_zip)} 
+    return {"date": datetime.datetime.utcnow().isoformat(),
+            "size": len(dump_zip)}
 
 @app.template_filter("pretty_num")
 def nice_number(raw_number):
@@ -221,8 +221,8 @@ def home():
     count = result[0].get("count").get("value")
     if int(count) < 1:
         flash("Triplestore is empty, please load service hub RDF data")
-    return render_template("index.html", 
-        version=__version__, 
+    return render_template("index.html",
+        version=__version__,
         count="{:,}".format(int(count)))
 
 @app.route("/reports/")
@@ -236,7 +236,7 @@ def reporting(name=None):
     return render_template(
         "reports/{0}.html".format(name),
         data=report_output)
-        
+
 
 @app.route("/<path:type_of>/<path:name>")
 def authority_view(type_of, name=None):
@@ -258,7 +258,7 @@ def authority_view(type_of, name=None):
     WHERE {{
         <{entity}> rdf:type {type_of} .
         OPTIONAL {{
-            <{entity}> rdfs:label ?label 
+            <{entity}> rdfs:label ?label
         }}
         OPTIONAL {{
             <{entity}> rdf:value ?value
@@ -275,7 +275,7 @@ def authority_view(type_of, name=None):
         if 'label' in row:
             literal = rdflib.Literal(row.get('label').get('value'),
                                      datatype=row.get('label').get('datatype'))
- 
+
             entity_graph.add((iri, rdflib.RDFS.label, literal))
         if 'value' in row:
             literal = rdflib.Literal(row.get('value').get('value'),
@@ -309,7 +309,7 @@ def resource_dump():
 
 @app.route("/resourcedump-<int:count>.zip")
 def resource_zip(count):
-    zip_location = os.path.join(PROJECT_BASE, 
+    zip_location = os.path.join(PROJECT_BASE,
         "dump/{}.zip".format(count))
     if not os.path.exists(zip_location):
         abort(404)
@@ -319,7 +319,7 @@ def resource_zip(count):
 #@cache.cached(timeout=86400) # Cached for 1 day
 def site_index():
     """Generates siteindex XML, each sitemap has a maximum of 50k links
-    dynamically generates the necessary number of sitemaps in the 
+    dynamically generates the necessary number of sitemaps in the
     template"""
     bindings = __run_query__(PREFIX + """
 SELECT (count(?s) as ?count) WHERE {
@@ -331,8 +331,8 @@ SELECT (count(?s) as ?count) WHERE {
     mod_date = app.config.get('MOD_DATE')
     if mod_date is None:
         mod_date=datetime.datetime.utcnow().strftime("%Y-%m-%d")
-    xml = render_template("siteindex.xml", 
-            count=range(1, shards+1), 
+    xml = render_template("siteindex.xml",
+            count=range(1, shards+1),
             last_modified=mod_date)
     return Response(xml, mimetype="text/xml")
 
@@ -372,7 +372,7 @@ def detail(uid=None):
     uri = app.config.get("BASE_URL") + uid
     raw_instance = __generate_profile__(uri)
     return Response(raw_instance, mimetype="application/json")
-   
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

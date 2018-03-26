@@ -1,0 +1,53 @@
+@prefix kds: <http://knowledgelinks.io/ns/data-structures/> .
+@prefix es: <http://knowledgelinks.io/ns/elasticsearch/> .
+@prefix kdr: <http://knowledgelinks.io/ns/data-resources/> .
+@prefix obi: <https://w3id.org/openbadges#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix bf: <http://id.loc.gov/ontologies/bibframe/> .
+@prefix dcterm: <http://purl.org/dc/terms/> .
+@prefix mads: <http://www.loc.gov/mads/rdf/v1#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+bf:Work kds:esIndex "works" ;
+	kds:esDocType "work" .
+
+bf:Collection kds:esIndex "collections" ;
+	kds:esDocType "collection" .
+
+bf:Instance kds:esRmlProcessor [
+		a kdr:RmlSPARQLProcessor ;
+		kds:esRmlMapping "bf-to-schema_rdfw.ttl" ;
+		kds:forceNested true ;
+		rdfs:label "schema_json_ld" ;
+		kds:rmlProcessorParams [
+			kds:rtn_format "json-ld" ;
+			kds:subjectKwarg "instance" ;
+			a kdr:ParamaterClass
+		]
+	] .
+
+bf:Agent kds:esIndex "agents" ;
+	kds:esDocType "agent" .
+
+bf:Item kds:esIndex "items" ;
+	kds:esDocType "item" ;
+	kds:esRmlProcessor [
+		a kdr:RmlSPARQLProcessor ;
+		kds:esRmlMapping "bf-to-map4.ttl", "map4.ttl";
+		rdfs:label "map4_json_ld";
+		kds:forceNested true ;
+		kds:rmlProcessorParams [
+			kds:rtn_format "json-ld" ;
+			kds:subjectKwarg "item_iri" ;
+			a kdr:ParamaterClass
+		]
+	] .
+
+# ----------------- bf:Topic ---------------------------------------------------
+bf:Topic kds:esIndex "topics" ;
+	kds:esDocType "topic" .
