@@ -16,27 +16,27 @@
 bf:Work kds:esIndex "works" ;
 	kds:esDocType "work" .
 
-bf:Collection kds:esIndex "collections" ;
-	kds:esDocType "collection" .
+# bf:Collection kds:esIndex "collections" ;
+# 	kds:esDocType "collection" .
 
-bf:Instance kds:esRmlProcessor [
-		a kdr:RmlSPARQLProcessor ;
-		kds:esRmlMapping "bf-to-schema_rdfw.ttl" ;
-		kds:forceNested true ;
-		rdfs:label "schema_json_ld" ;
-		kds:rmlProcessorParams [
-			kds:rtn_format "json-ld" ;
-			kds:subjectKwarg "instance" ;
-			a kdr:ParamaterClass
-		]
-	] .
+# bf:Instance kds:esRmlProcessor [
+# 		a kdr:RmlSPARQLProcessor ;
+# 		kds:esRmlMapping "bf-to-schema_rdfw.ttl" ;
+# 		kds:forceNested true ;
+# 		rdfs:label "schema_json_ld" ;
+# 		kds:rmlProcessorParams [
+# 			kds:rtn_format "json-ld" ;
+# 			kds:subjectKwarg "instance" ;
+# 			a kdr:ParamaterClass
+# 		]
+# 	] .
 
-bf:Agent kds:esIndex "agents" ;
-	kds:esDocType "agent" .
+# bf:Agent kds:esIndex "agents" ;
+# 	kds:esDocType "agent" .
 
-bf:Item kds:esIndex "items" ;
-	kds:esDocType "item" ;
-	kds:esRmlProcessor [
+# bf:Item kds:esIndex "items" ;
+# 	kds:esDocType "item" ;
+bf:Item	kds:esRmlProcessor [
 		a kdr:RmlSPARQLProcessor ;
 		kds:esRmlMapping "bf-to-map4.ttl", "map4.ttl";
 		rdfs:label "map4_json_ld";
@@ -49,5 +49,5 @@ bf:Item kds:esIndex "items" ;
 	] .
 
 # ----------------- bf:Topic ---------------------------------------------------
-bf:Topic kds:esIndex "topics" ;
-	kds:esDocType "topic" .
+# bf:Topic kds:esIndex "topics" ;
+# 	kds:esDocType "topic" .
