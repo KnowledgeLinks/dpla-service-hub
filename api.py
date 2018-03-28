@@ -31,27 +31,51 @@ from resync.dump import Dump
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
 
+from rdfframework.rml import RmlManager
+from rdfframework.datamanager import DefinitionManager
+from rdfframework.datatypes import RdfNsManager
+
+RmlManager().register_defs([('package_all', 'bibcat.maps')])
+# Define vocabulary and definition file locations
+DefinitionManager().add_file_locations([('vocabularies', ['rdf',
+                                                          'rdfs',
+                                                          'owl',
+                                                          'schema',
+                                                          'bf',
+                                                          'skos',
+                                                          'dcterm']),
+                                        ('package_all',
+                                         'bibcat.rdfw-definitions')])
+# Register RDF namespaces to use
+RdfNsManager({'acl': '<http://www.w3.org/ns/auth/acl#>',
+              'bd': '<http://www.bigdata.com/rdf#>',
+              'bf': 'http://id.loc.gov/ontologies/bibframe/',
+              'dbo': 'http://dbpedia.org/ontology/',
+              'dbp': 'http://dbpedia.org/property/',
+              'dbr': 'http://dbpedia.org/resource/',
+              'dc': 'http://purl.org/dc/elements/1.1/',
+              'dcterm': 'http://purl.org/dc/terms/',
+              'dpla': 'http://dp.la/about/map/',
+              'edm': 'http://www.europeana.eu/schemas/edm/',
+              'es': 'http://knowledgelinks.io/ns/elasticsearch/',
+              'foaf': 'http://xmlns.com/foaf/0.1/',
+              'loc': 'http://id.loc.gov/authorities/',
+              'm21': '<http://knowledgelinks.io/ns/marc21/>',
+              'mads': '<http://www.loc.gov/mads/rdf/v1#>',
+              'mods': 'http://www.loc.gov/mods/v3#',
+              'ore': 'http://www.openarchives.org/ore/terms/',
+              'owl': 'http://www.w3.org/2002/07/owl#',
+              'relators': 'http://id.loc.gov/vocabulary/relators/',
+              'schema': 'http://schema.org/',
+              'skos': 'http://www.w3.org/2004/02/skos/core#',
+              'xsd': 'http://www.w3.org/2001/XMLSchema#'})
+
+
 BF = rdflib.Namespace("http://id.loc.gov/ontologies/bibframe/")
-
-PROJECT_BASE =  os.path.abspath(os.path.dirname(__file__))
-PREFIX = """PREFIX bf: <http://id.loc.gov/ontologies/bibframe/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX relators: <http://id.loc.gov/vocabulary/relators/>
-PREFIX schema: <http://schema.org/>
-"""
-
-DPLA_MAPv4 = processor.SPARQLBatchProcessor(
-        triplestore_url=app.config.get("TRIPLESTORE_URL"),
-        rml_rules=["bf-to-map4.ttl",
-            "{}/profiles/map4.ttl".format(PROJECT_BASE)])
-
-MAPv4_context = {"edm": "http://www.europeana.eu/schemas/edm/",
-		 "dcterm": "http://purl.org/dc/terms/",
-		 "org": "http://www.openarchives.org/ore/terms"}
 
 W3C_DATE = "%Y-%m-%dT%H:%M:%SZ"
 
-__version__ = "0.9.12"
+__version__ = "1.0.0"
 
 cache = Cache(app, config={"CACHE_TYPE": "filesystem",
                            "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
@@ -96,41 +120,7 @@ def __get_mod_date__(entity_iri=None):
 
 
 def __generate_profile__(instance_uri):
-    item_sparql = PREFIX + """
-    SELECT DISTINCT ?item
-    WHERE {{
-        ?item bf:itemOf <{instance_iri}> .
-    }}""".format(instance_iri=instance_uri)
-    item_results = __run_query__(item_sparql)
-    if len(item_results) < 1:
-        abort(404)
-    item = item_results[0].get("item").get("value")
-    DPLA_MAPv4.run(instance_iri=instance_uri,
-                   item_iri=item)
-    if len(DPLA_MAPv4.output) < 1:
-        abort(404)
-    raw_instance = DPLA_MAPv4.output.serialize(
-        format='json-ld',
-        context=MAPv4_context)
-    if isinstance(raw_instance, bytes):
-        raw_instance = raw_instance.decode()
-    instance = json.loads(raw_instance)
-    # Post-processing to change certain properties to be
-    # a Python list instead of a single literal or URI
-    json_array_fields = ["dcterm:title",
-                         "dcterm:alternative",
-                         "dcterm:identifier",
-                         "dc:date",
-                         "dcterm:language",
-                         "dcterm:creator",
-                         "dcterm:extent",
-                         "dcterm:subject"]
-    for entity in instance.get('@graph'):
-        for field in json_array_fields:
-            if field in entity and not isinstance(entity.get(field), list):
-                org_value = entity.get(field)
-                entity[field] = [org_value,]
-
+    
     return json.dumps(instance)
 
 
