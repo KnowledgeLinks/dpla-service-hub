@@ -17,11 +17,13 @@ import bibcat.rml.processor as processor
 
 from zipfile import ZipFile, ZIP_DEFLATED
 
+from elasticsearch_dsl import Search, Q
+
 from flask import abort, Flask, jsonify, request, render_template, Response
 from flask import flash, url_for
 from flask import flash
+#from flask_cache import Cache
 
-from flask_cache import Cache
 from resync import CapabilityList, ResourceDump, ResourceDumpManifest
 from resync import ResourceList
 from resync.resource import Resource
@@ -32,6 +34,7 @@ app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
 
 from rdfframework.rml import RmlManager
+from rdfframework.configuration import RdfConfigManager
 from rdfframework.datamanager import DefinitionManager
 from rdfframework.datatypes import RdfNsManager
 
@@ -70,6 +73,8 @@ RdfNsManager({'acl': '<http://www.w3.org/ns/auth/acl#>',
               'skos': 'http://www.w3.org/2004/02/skos/core#',
               'xsd': 'http://www.w3.org/2001/XMLSchema#'})
 
+CONFIG_MANAGER = RdfConfigManager(app.config, verify=False)
+CONNECTIONS = CONFIG_MANAGER.conns
 
 BF = rdflib.Namespace("http://id.loc.gov/ontologies/bibframe/")
 
@@ -77,8 +82,8 @@ W3C_DATE = "%Y-%m-%dT%H:%M:%SZ"
 
 __version__ = "1.0.0"
 
-cache = Cache(app, config={"CACHE_TYPE": "filesystem",
-                           "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
+#cache = Cache(app, config={"CACHE_TYPE": "filesystem",
+#                           "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
 
 
 def __run_query__(query):
@@ -96,8 +101,7 @@ def __get_instances__(offset=0):
         offset(int): offset number of records
     """
     offset = int(offset)*50000
-    sparql = PREFIX + """
-
+    sparql = """
 SELECT DISTINCT ?instance ?date
 WHERE {{
     ?instance rdf:type bf:Instance .
@@ -108,7 +112,7 @@ WHERE {{
 }} ORDER BY ?instance
 LIMIT 50000
 OFFSET {0}""".format(offset)
-    instances = __run_query__(sparql)
+    instances = CONNECTIONS.datastore.query(sparql) 
     return instances
 
 
@@ -120,8 +124,21 @@ def __get_mod_date__(entity_iri=None):
 
 
 def __generate_profile__(instance_uri):
-    
-    return json.dumps(instance)
+    search = Search(using=CONNECTIONS.search.es).query(
+        Q("term", uri="{}#Work".format(instance_uri))).source(
+            ["bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"])
+    result = search.execute()
+    if len(result.hits.hits) < 1:
+        #abort(404)
+        #click.echo("{}#Work not found".format(instance_uri))
+        return
+    if len(result.hits.hits[0]["_source"]) < 1:
+        #abort(404)
+        #click.echo("{}#Work missing _source".format(instance_uri))
+        return
+    raw_map4 = result.hits.hits[0]["_source"]["bf_hasInstance"][0]\
+        ["bf_hasItem"][0]["rml_map"]["map4_json_ld"]    
+    return raw_map4
 
 
 def __generate_resource_dump__():
@@ -129,7 +146,7 @@ def __generate_resource_dump__():
     r_dump.ln.append({"rel": "resourcesync",
                       "href": url_for('capability_list')})
 
-    bindings = __run_query__(PREFIX + """
+    bindings = CONNECTIONS.datastore.query("""
 SELECT (count(?s) as ?count) WHERE {
    ?s rdf:type bf:Instance .
    ?item bf:itemOf ?s .
@@ -138,11 +155,18 @@ SELECT (count(?s) as ?count) WHERE {
     shards = math.ceil(count/50000)
     for i in range(0, shards):
         zip_info = __generate_zip_file__(i)
+        try:
+            zip_modified = datetime.datetime.fromtimestamp(zip_info.get('date'))
+            last_mod = zip_modified.strftime("%Y-%m-%d")
+
+        except TypeError:
+            last_mod = zip_info.get('date')[0:10]
+        click.echo("Total errors {:,}".format(len(zip_info.get('errors'))))
         r_dump.add(
             Resource(url_for('resource_zip',
-                             offset=i*50000),
-                     lastmod=zip_info.get('date'),
-                     type="application/zip",
+                             count=i*50000),
+                     lastmod=last_mod,
+                     mime_type="application/zip",
                      length=zip_info.get("size")
             )
         )
@@ -150,7 +174,7 @@ SELECT (count(?s) as ?count) WHERE {
 
 def __generate_zip_file__(offset=0):
     start = datetime.datetime.utcnow()
-    print("Started at {}".format(start.ctime()))
+    click.echo("Started at {}".format(start.ctime()))
     manifest = ResourceDumpManifest()
     manifest.modified = datetime.datetime.utcnow().isoformat()
     manifest.ln.append({"rel": "resourcesync",
@@ -158,7 +182,8 @@ def __generate_zip_file__(offset=0):
     file_name = "{}-{:03}.zip".format(
                                datetime.datetime.utcnow().toordinal(),
                                offset)
-    tmp_location = os.path.join(PROJECT_BASE,
+    
+    tmp_location = os.path.join(app.config.get("DIRECTORIES")[0].get("path"),
                                 "dump/{}".format(file_name))
     if os.path.exists(tmp_location) is True:
         return {"date": os.path.getmtime(tmp_location),
@@ -168,15 +193,27 @@ def __generate_zip_file__(offset=0):
                        compression=ZIP_DEFLATED,
                        allowZip64=True)
     instances = __get_instances__(offset)
+    errors = []
+    click.echo("Iterating through {:,} instances".format(len(instances)))
     for i,row in enumerate(instances):
         instance_iri = row.get("instance").get('value')
         key = instance_iri.split("/")[-1]
         if not "date" in row:
             last_mod = __get_mod_date__()
         else:
-            last_mod = "{}Z".format(row.get("date").get("value"))
-        path = "/resources/{}.json".format(key)
+            last_mod = "{}".format(row.get("date").get("value")[0:10])
+        path = "resources/{}.json".format(key)
+        if not i%25 and i > 0:
+            click.echo(".", nl=False)
+        if not i%100:
+            click.echo("{:,}".format(i), nl=False)
         raw_json = __generate_profile__(instance_iri)
+        if raw_json is None:
+            errors.append(instance_iri)
+            continue
+        elif len(raw_json) < 1:
+            click.echo(instance_iri, nl=False)
+            break
         dump_zip.writestr(path,
                           raw_json)
         manifest.add(
@@ -184,19 +221,17 @@ def __generate_zip_file__(offset=0):
                      lastmod=last_mod,
                      length="{}".format(len(raw_json)),
                      path=path))
-        if not i%25 and i > 0:
-            print(".", end="")
-        if not i%100:
-            print("{:,}".format(i), end="")
     dump_zip.writestr("manifest.xml", manifest.as_xml())
     dump_zip.close()
     end = datetime.datetime.utcnow()
-    print("Finished at {}, total time {} min, size={}".format(
+    zip_size = os.stat(tmp_location).st_size
+    click.echo("Finished at {}, total time {} min, size={}".format(
         end.ctime(),
         (end-start).seconds / 60.0,
         i))
     return {"date": datetime.datetime.utcnow().isoformat(),
-            "size": len(dump_zip)}
+            "size": zip_size,
+            "errors": errors}
 
 @app.template_filter("pretty_num")
 def nice_number(raw_number):
@@ -204,10 +239,15 @@ def nice_number(raw_number):
         return ''
     return "{:,}".format(int(raw_number))
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html", error=e), 404
+
 @app.route("/")
 def home():
     """Default page"""
-    result = __run_query__("SELECT (COUNT(*) as ?count) WHERE {?s ?p ?o }")
+    result = CONNECTIONS.datastore.query(
+        "SELECT (COUNT(*) as ?count) WHERE {?s ?p ?o }")
     count = result[0].get("count").get("value")
     if int(count) < 1:
         flash("Triplestore is empty, please load service hub RDF data")
@@ -294,11 +334,13 @@ def capability_list():
 @app.route("/resourcedump.xml")
 def resource_dump():
     xml = __generate_resource_dump__()
-    return Response(xml,
+    return Response(xml.as_xml(),
             "text/xml")
 
 @app.route("/resourcedump-<int:count>.zip")
 def resource_zip(count):
+    zip_location = os.path.join(app.config.get("DIRECTORIES")[0].get("path"),
+                                "dump/resour{}".format(file_name))
     zip_location = os.path.join(PROJECT_BASE,
         "dump/{}.zip".format(count))
     if not os.path.exists(zip_location):
@@ -311,12 +353,12 @@ def site_index():
     """Generates siteindex XML, each sitemap has a maximum of 50k links
     dynamically generates the necessary number of sitemaps in the
     template"""
-    bindings = __run_query__(PREFIX + """
-SELECT (count(?s) as ?count) WHERE {
-   ?s rdf:type bf:Instance .
-   ?item bf:itemOf ?s .
-}""")
-    count = int(bindings[0].get('count').get('value'))
+    result = CONNECTIONS.datastore.query("""SELECT (count(?work) as ?count)
+WHERE {
+    ?work rdf:type bf:Work .
+    ?instance bf:instanceOf ?work .
+    ?item bf:itemOf ?instance . }""")
+    count = int(result[0].get('count').get('value'))
     shards = math.ceil(count/50000)
     mod_date = app.config.get('MOD_DATE')
     if mod_date is None:
@@ -352,16 +394,17 @@ def sitemap(offset=0):
     xml = resource_list.as_xml()
     return Response(xml, mimetype="text/xml")
 
-@app.route("/<uid>.json")
+@app.route("/<path:uid>.json")
 def detail(uid=None):
     """Generates DPLA Map V4 JSON-LD"""
     if uid.startswith('favicon'):
         return ''
+    click.echo("UID is {}".format(uid))
     if uid is None:
         abort(404)
     uri = app.config.get("BASE_URL") + uid
-    raw_instance = __generate_profile__(uri)
-    return Response(raw_instance, mimetype="application/json")
+    raw_map_4 = __generate_profile__(uri)
+    return Response(raw_map_4, mimetype="application/json")
 
 
 if __name__ == '__main__':
