@@ -12,3 +12,5 @@ pytz
 passlib
 bibcat
 resync
+elasticsearch
+elasticsearch_dsl
