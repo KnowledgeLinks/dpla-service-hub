@@ -6,7 +6,7 @@ bibcat:
      - semanticServer:semanticServer
 
 semanticServer:
-    image: knowledgelinks/semantic-serve
+    image: knowledgelinks/semantic-server
     ports:
      - "8080:8080"
      - "9999:9999"
