@@ -3,6 +3,7 @@ __author__ = "Jeremy Nelson, Mike Stabile"
 
 import click
 import datetime
+import hashlib
 import json
 import math
 import os
@@ -17,6 +18,7 @@ import bibcat.rml.processor as processor
 
 from zipfile import ZipFile, ZIP_DEFLATED
 
+from elasticsearch.exceptions import NotFoundError
 from elasticsearch_dsl import Search, Q
 
 from flask import abort, Flask, jsonify, request, render_template, Response
@@ -124,21 +126,20 @@ def __get_mod_date__(entity_iri=None):
 
 
 def __generate_profile__(instance_uri):
-    search = Search(using=CONNECTIONS.search.es).query(
-        Q("term", uri="{}#Work".format(instance_uri))).source(
-            ["bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"])
-    result = search.execute()
-    if len(result.hits.hits) < 1:
-        #abort(404)
-        #click.echo("{}#Work not found".format(instance_uri))
-        return
-    if len(result.hits.hits[0]["_source"]) < 1:
+    work_iri = "{}#Work".format(instance_uri)
+    work_sha1 = hashlib.sha1(work_iri.encode())
+    try:
+        work_result = CONNECTIONS.search.es.get(
+            "works_v1",
+            work_sha1.hexdigest(),
+            _source=["bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"])
+    except NotFoundError:
+        return 
+    if  work_result is None:
         #abort(404)
         #click.echo("{}#Work missing _source".format(instance_uri))
         return
-    raw_map4 = result.hits.hits[0]["_source"]["bf_hasInstance"][0]\
-        ["bf_hasItem"][0]["rml_map"]["map4_json_ld"]    
-    return raw_map4
+    return json.dumps(work_result)
 
 
 def __generate_resource_dump__():
@@ -161,7 +162,8 @@ SELECT (count(?s) as ?count) WHERE {
 
         except TypeError:
             last_mod = zip_info.get('date')[0:10]
-        click.echo("Total errors {:,}".format(len(zip_info.get('errors'))))
+        click.echo("Total errors {:,}".format(
+            len(zip_info.get('errors', []))))
         r_dump.add(
             Resource(url_for('resource_zip',
                              count=i*50000),
@@ -335,7 +337,7 @@ def capability_list():
 def resource_dump():
     xml = __generate_resource_dump__()
     return Response(xml.as_xml(),
-            "text/xml")
+            mimetype="text/xml")
 
 @app.route("/resourcedump-<int:count>.zip")
 def resource_zip(count):
