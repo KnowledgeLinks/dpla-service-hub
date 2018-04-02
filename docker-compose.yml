@@ -1,11 +1,13 @@
-bibcat:
+version: "2"
+services:
+  bibcat:
     build: .
     ports:
         - "5000:5000"
-    links:
-     - semanticServer:semanticServer
+    network:
+     - new
 
-semanticServer:
+  semanticServer:
     image: knowledgelinks/semantic-server
     ports:
      - "8080:8080"
@@ -15,12 +17,17 @@ semanticServer:
      - /opt/bibcat_repository/fedora-data:/usr/share/fedora-data
      - /opt/bibcat_triplestore:/usr/share/blazegraph
      - $HOME/local_data:/local_data
+    network:
+     - new
 
-web:
+  web:
     build: .
     dockerfile: DockerNginx
-    links:
-     - bibcat:bibcat
+    networks:
+     - new
     ports:
      - "80:80"
      - "443:443"
+
+networks:
+  - new:
