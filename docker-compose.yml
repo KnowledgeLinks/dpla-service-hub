@@ -4,7 +4,7 @@ services:
     build: .
     ports:
         - "5000:5000"
-    network:
+    networks:
      - new
 
   semanticServer:
@@ -17,7 +17,7 @@ services:
      - /opt/bibcat_repository/fedora-data:/usr/share/fedora-data
      - /opt/bibcat_triplestore:/usr/share/blazegraph
      - $HOME/local_data:/local_data
-    network:
+    networks:
      - new
 
   web:
