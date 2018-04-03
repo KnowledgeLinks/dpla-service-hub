@@ -22,111 +22,19 @@ Platform using the [RDF Framework][RDFF] and [BIBCAT][BC].
 This project started as a pilot for the Colorado/Wyoming [DP.LA][DPLA] 
 service hub. 
 
-## Setup
+## Setup for Pilot
 
-1.  Clone or fork the [project repository][HOME]:
-
-    ```
-    git clone https://github.com/KnowledgeLinks/dpla-service-hub.git
-    ``` 
-
-1.  Initialize and update submodules
-
-    ```
-    cd dpla-service-hub/
-    git submodule init
-    git submodule update
-    ```
-
-1.  Create an instance directory for configuration and custom RDF rules:
-
-    ```
-    mkdir instance
-    cd instance/
-    touch config.py
-    ```
-
-### Config.py options
-To configure [dpla-service-hub][HOME], you'll need to add these minimum 
-variables in your `config.py` file.
-
-*   **SECRET_KEY** - Random string of characters for seeding Flask
-*   **BASE_URL** - Base URL to use for IRI minting, defaults to *http://bibcat.org/*
-
-## Ingestion
-Right now, the way to ingest records into the triplestore is open an 
-interactive Python 3 session. Here is an example of
-setting-up your Python environment to use the these different types of
-source ingesters into the triplestore:
-
-```python
-import sys
-sys.path.append("/dpla-service-hub/bibcat")
-from ingesters.ingester import NS_MGR, new_graph
-```
-
-### Customizing 
-To customize the field mappings, add common properties, and other 
-information to the triplestore, add Turtle RDF files in the `custom` 
-directory. When you then create an ingester, include the title of the
-turtle file with the **custom** parameter to use your custom rules
-during the ingestion period.
-
-
-### MARC 21
-Create a MARC21 ingester using a custom RDF rules graph for Colorado College 
-along with a sample of Colorado College's MARC 21 records:
-
-```python
-import pymarc
-import ingesters.marc as marc2bf
-marc_ingester = marc2bf.MARCIngester(rules_ttl=['cc-marc-bf-.ttl'])
-with open("dpla-service-hub/tmp/cc-marc.mrc", "rb") as fo:
-    reader = pymarc.MARCReader(fo, to_unicode=True)
-for record in reader:
-    marc_ingester.transform(record=record)
-```
-
-### MODS XML
-
-```python
-import requests
-import xml.etree.ElementTree as etree
-import ingesters.mods as mods
-mods_ingester = mods.MODSIngester(xml=mods_xml, rules_ttl=["cc-mods-bf.ttl"])
-```
-
-Request the MODS XML datafile from a Colorado College's Islandora repository 
-for a single Fedora Object:
-
-```python
-mods_result = request.get("https://digitalcc.coloradocollege.edu/islandora/object/coccc:26262/datastream/MODS/view")
-mods_xml = etree.XML(mods_result.text)
-mods_ingester.transform(source=mods_xml)
-```
-
-### Dublin Core XML
-To test a random collection of Dublin Core RDF XML from Denver Public Library
-
-```python 
-import pickle
-import pymarc
-import ingesters.dc as dc
-dc_ingester = dc.DCIngester(rules_ttlt st=['dpl-dc.ttl'])
-with open("dpla-service-hub/tmp/sample_recs.pickle", "rb") as fo:
-    sample_recs = pickle.load(fo)
-for rdf_record in sample_recs:
-    dc_ingester.transform(xml=etree.tostring(rdf_record))
-    dc_ingester.add_to_triplestore()
-```
-
-### Dublin Core CSV
-
-## Deploying with Docker and Docker-Compose
-This project now supports [Docker][DOCK] and [Docker Compose](https://docs.docker.com/compose/). To run
-the DPLA Service Hub stack, run `docker-compose up` from the base directory. It will
-build a bibcat image using the instance/config.py file you created 
-
-
-### Server Aggregation Feed
+1.  Clone [project][HOME] to the `/opt/` directory.
+1.  Make an instance directory at `/opt/dpla-service-home/`
+1.  Make an uploads directory at `/opt/dpla-service-home/` (or any other location 
+    specified in `config.py`).
+1.  Create a `config.py` in the new `/opt/dpla-service-home/instance/` directory
+    and specify two triplestore connections (**plains2peaks** and **active_defs**)
+    and one Elasticsearch connection called **search**.
+1.  SFTP the current contents `data` directory in the Plains2Peaks repository at 
+    https://github.com/KnowledgeLinks/Plains2PeaksPilot to the `/opt/dpla-service-hub/uploads`
+    directory.
+1.  Launch `docker-compose up` to download and/or build images for the service hub. You may
+    need to restart the bibcat container with `docker-compose restart bibcat`.
+1.  In separate command-line, launch `python load.py` to index the triples into Elasticsearch 
 
