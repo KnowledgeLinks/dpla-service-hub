@@ -1,33 +1,35 @@
 version: "2"
 services:
   bibcat:
-    build: .
+    build: 
+      context: .
     ports:
-        - "5000:5000"
+      - "5000:5000"
     networks:
-     - new
+      - new
 
   semanticServer:
     image: knowledgelinks/semantic-server
     ports:
-     - "8080:8080"
-     - "9999:9999"
-     - "9200:9200"
+      - "8080:8080"
+      - "9999:9999"
+      - "9200:9200"
     volumes:
-     - /opt/bibcat_repository/fedora-data:/usr/share/fedora-data
-     - /opt/bibcat_triplestore:/usr/share/blazegraph
-     - $HOME/local_data:/local_data
+      - /opt/bibcat_repository/fedora-data:/usr/share/fedora-data
+      - /opt/bibcat_triplestore:/usr/share/blazegraph
+      - $HOME/local_data:/local_data
     networks:
-     - new
+      - new
 
   web:
-    build: .
-    dockerfile: DockerNginx
+    build: 
+      context: .
+      dockerfile: DockerNginx
     networks:
-     - new
+      - new
     ports:
-     - "80:80"
-     - "443:443"
+      - "80:80"
+      - "443:443"
 
 networks:
-  - new:
+  new:
