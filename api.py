@@ -135,6 +135,7 @@ def __generate_profile__(instance_uri):
         work_result = CONNECTIONS.search.es.get(
             "works_v1",
             id=work_sha1.hexdigest(),
+            doc_type="work",
             _source=["bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"])
         click.echo("After es call")
     except NotFoundError:
