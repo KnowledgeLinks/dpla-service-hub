@@ -129,27 +129,20 @@ def __get_mod_date__(entity_iri=None):
 def __generate_profile__(instance_uri):
     work_iri = "{}#Work".format(instance_uri)
     work_sha1 = hashlib.sha1(work_iri.encode())
-    click.echo("Work sha1 {}".format(work_sha1.hexdigest()))
     try:
-        click.echo("Before call to search")
         work_result = CONNECTIONS.search.es.get(
-            "works_v1",
+            "works",
             id=work_sha1.hexdigest(),
             doc_type="work",
             _source=["bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"])
-        click.echo("After es call")
     except NotFoundError:
-        click.echo("Connection NotFoundError from ES")
         return
     except:
-        click.echo("Raised error {}".format(sys.exc_info()))
         return 
     if  work_result is None:
-        click.echo("Work result is None")
         #abort(404)
         #click.echo("{}#Work missing _source".format(instance_uri))
         return
-    click.echo("Work result {}".format(work_result.keys()))
     return work_result.get("_source").get("bf_hasInstance", [])[0].\
            get("bf_hasItem", [])[0].get("rml_map", {}).get("map4_json_ld")
 
@@ -413,13 +406,10 @@ def detail(uid=None):
     """Generates DPLA Map V4 JSON-LD"""
     if uid.startswith('favicon'):
         return ''
-    click.echo("UID is {}".format(uid))
     if uid is None:
         abort(404)
     uri = app.config.get("BASE_URL") + uid
-    click.echo("URI is {}".format(uri))
     raw_map_4 = __generate_profile__(uri)
-    click.echo("After generate profile {}".format(raw_map_4))
     return Response(raw_map_4, mimetype="application/json")
 
 
