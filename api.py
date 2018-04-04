@@ -40,6 +40,7 @@ from rdfframework.rml import RmlManager
 from rdfframework.configuration import RdfConfigManager
 from rdfframework.datamanager import DefinitionManager
 from rdfframework.datatypes import RdfNsManager
+from rdfframework.datasets import json_qry
 
 RmlManager().register_defs([('package_all', 'bibcat.maps')])
 # Define vocabulary and definition file locations
@@ -115,7 +116,7 @@ WHERE {{
 }} ORDER BY ?instance
 LIMIT 50000
 OFFSET {0}""".format(offset)
-    instances = CONNECTIONS.datastore.query(sparql) 
+    instances = CONNECTIONS.datastore.query(sparql)
     return instances
 
 
@@ -129,22 +130,24 @@ def __get_mod_date__(entity_iri=None):
 def __generate_profile__(instance_uri):
     work_iri = "{}#Work".format(instance_uri)
     work_sha1 = hashlib.sha1(work_iri.encode())
+    source_filter = "bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"
+    jqry_str = ".".join(['$', source_filter])
     try:
         work_result = CONNECTIONS.search.es.get(
             "works",
             id=work_sha1.hexdigest(),
             doc_type="work",
-            _source=["bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"])
+            _source=[source_filter])
     except NotFoundError:
         return
     except:
         return 
     if  work_result is None:
-        #abort(404)
-        #click.echo("{}#Work missing _source".format(instance_uri))
         return
-    return work_result.get("_source").get("bf_hasInstance", [])[0].\
-           get("bf_hasItem", [])[0].get("rml_map", {}).get("map4_json_ld")
+    items = json_qry(work_result.get('_source', {}),
+                     jqry_str)
+    if items:
+        return items[0]
 
 
 def __generate_resource_dump__():
@@ -189,7 +192,7 @@ def __generate_zip_file__(offset=0):
     file_name = "{}-{:03}.zip".format(
                                datetime.datetime.utcnow().toordinal(),
                                offset)
-    
+
     tmp_location = os.path.join(app.config.get("DIRECTORIES")[0].get("path"),
                                 "dump/{}".format(file_name))
     if os.path.exists(tmp_location) is True:
