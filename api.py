@@ -39,7 +39,7 @@ app.config.from_pyfile('config.py')
 from rdfframework.rml import RmlManager
 from rdfframework.configuration import RdfConfigManager
 from rdfframework.datamanager import DefinitionManager
-from rdfframework.datatypes import RdfNsManager
+from rdfframework.datatypes import RdfNsManager, XsdDatetime
 from rdfframework.datasets import json_qry
 
 RmlManager().register_defs([('package_all', 'bibcat.maps')])
@@ -76,15 +76,22 @@ RdfNsManager({'acl': '<http://www.w3.org/ns/auth/acl#>',
               'schema': 'http://schema.org/',
               'skos': 'http://www.w3.org/2004/02/skos/core#',
               'xsd': 'http://www.w3.org/2001/XMLSchema#'})
-
+app.config['DIRECTORIES'].append({"name": "dump", "path": "base/dump"})
 CONFIG_MANAGER = RdfConfigManager(app.config,
                                   verify=False,
-                                  delay_check=True)
+                                  delay_check=True,
+                                  timeout=30)
 CONNECTIONS = CONFIG_MANAGER.conns
 
+print(CONFIG_MANAGER.dirs)
 BF = rdflib.Namespace("http://id.loc.gov/ontologies/bibframe/")
 
 W3C_DATE = "%Y-%m-%dT%H:%M:%SZ"
+
+# The elasticsearch document path to the map4 json ld
+MAP4_PATH = "bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"
+# add a 'first' call to strip the list return of the value
+MAP4_JSON_QRY = MAP4_PATH + "|first=true"
 
 __version__ = "1.0.0"
 
@@ -132,31 +139,20 @@ def __get_mod_date__(entity_iri=None):
 def __generate_profile__(instance_uri):
     work_iri = "{}#Work".format(instance_uri)
     work_sha1 = hashlib.sha1(work_iri.encode())
-    click.echo("Work sha1 {}".format(work_sha1.hexdigest()))
-    source_filter = "bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"
     try:
-        click.echo("Before call to search")
         work_result = CONNECTIONS.search.es.get(
             "works",
-            "work",
             id=work_sha1.hexdigest(),
-            _source=[source_filter])
-        click.echo("After es call")
+            doc_type="work",
+            _source=[MAP4_PATH])
     except NotFoundError:
-        click.echo("Connection NotFoundError from ES")
         return
     except:
-        click.echo("Raised error {}".format(sys.exc_info()))
         return
     if  work_result is None:
-        click.echo("Work result is None")
-        #abort(404)
-        #click.echo("{}#Work missing _source".format(instance_uri))
         return
     click.echo("Work result {}".format(work_result.keys()))
-    return json_qry(work_result.get('_source', {}),
-                    source_filter + "|first=true")
-
+    return json_qry(work_result.get('_source', {}), MAP4_JSON_QRY)
 
 def __generate_resource_dump__():
     r_dump = ResourceDump()
@@ -191,6 +187,13 @@ SELECT (count(?s) as ?count) WHERE {
     return r_dump
 
 def __generate_zip_file__(offset=0):
+
+    def get_scan(source=None):
+        """
+        Returns a elasticsearch_dsl scan object
+        """
+        s = Search(using=CONNECTIONS.search.es).index("works").source(source)
+        return s.scan()
     start = datetime.datetime.utcnow()
     click.echo("Started at {}".format(start.ctime()))
     manifest = ResourceDumpManifest()
@@ -201,8 +204,9 @@ def __generate_zip_file__(offset=0):
                                datetime.datetime.utcnow().toordinal(),
                                offset)
 
-    tmp_location = os.path.join(app.config.get("DIRECTORIES")[0].get("path"),
-                                "dump/{}".format(file_name))
+    # tmp_location = os.path.join(app.config.get("DIRECTORIES")[0].get("path"),
+    #                             "dump/{}".format(file_name))
+    tmp_location = os.path.join(CONFIG_MANAGER.dirs.dump, file_name)
     if os.path.exists(tmp_location) is True:
         return {"date": os.path.getmtime(tmp_location),
                 "size": os.path.getsize(tmp_location)}
@@ -210,35 +214,63 @@ def __generate_zip_file__(offset=0):
                        mode="w",
                        compression=ZIP_DEFLATED,
                        allowZip64=True)
-    instances = __get_instances__(offset)
+    # instances = __get_instances__(offset)
     errors = []
-    click.echo("Iterating through {:,} instances".format(len(instances)))
-    for i,row in enumerate(instances):
-        instance_iri = row.get("instance").get('value')
-        key = instance_iri.split("/")[-1]
-        if not "date" in row:
-            last_mod = __get_mod_date__()
-        else:
-            last_mod = "{}".format(row.get("date").get("value")[0:10])
+    # click.echo("Iterating through {:,} instances".format(len(instances)))
+    date_path = "bf_hasInstance.bf_generationProcess.bf_generationDate"
+    date_qry = date_path + "|first=True"
+    curr_date = __get_mod_date__()
+    i = 0
+    for hit in get_scan([MAP4_PATH, date_path, 'uri', "bf_hasInstance.uri"]):
+        hit_date = json_qry(hit._d_, date_qry)
+        last_mod = curr_date
+        instance_iri = json_qry(hit._d_, "bf_hasInstance.uri|first=true")
+        if hit_date:
+            last_mod = XsdDatetime(hit_date).strftime(W3C_DATE)
+        key = hit.uri.split("/")[-1]
         path = "resources/{}.json".format(key)
+        raw_json = json_qry(hit._d_, MAP4_JSON_QRY)
+        if raw_json is None:
+            errors.append(instance_iri)
+            continue
         if not i%25 and i > 0:
             click.echo(".", nl=False)
         if not i%100:
             click.echo("{:,}".format(i), nl=False)
-        raw_json = __generate_profile__(instance_iri)
-        if raw_json is None:
-            errors.append(instance_iri)
-            continue
-        elif len(raw_json) < 1:
-            click.echo(instance_iri, nl=False)
-            break
-        dump_zip.writestr(path,
-                          raw_json)
         manifest.add(
             Resource(instance_iri,
                      lastmod=last_mod,
                      length="{}".format(len(raw_json)),
                      path=path))
+        i += 1
+    # for i,row in enumerate(instances):
+    #     instance_iri = row.get("instance").get('value')
+    #     key = instance_iri.split("/")[-1]
+    #     if not "date" in row:
+    #         last_mod = __get_mod_date__()
+    #     else:
+    #         last_mod = "{}".format(row.get("date").get("value")[0:10])
+    #     path = "resources/{}.json".format(key)
+        # if not i%25 and i > 0:
+        #     click.echo(".", nl=False)
+        # if not i%100:
+        #     click.echo("{:,}".format(i), nl=False)
+    #     raw_json = __generate_profile__(instance_iri)
+    #     if raw_json is None:
+    #         errors.append(instance_iri)
+    #         continue
+    #     elif len(raw_json) < 1:
+    #         click.echo(instance_iri, nl=False)
+    #         break
+    #     dump_zip.writestr(path,
+    #                       raw_json)
+    #     manifest.add(
+    #         Resource(instance_iri,
+    #                  lastmod=last_mod,
+    #                  length="{}".format(len(raw_json)),
+    #                  path=path))
+    print("COUNT: ", i)
+    print("Time: ", (datetime.datetime.utcnow()-start))
     dump_zip.writestr("manifest.xml", manifest.as_xml())
     dump_zip.close()
     end = datetime.datetime.utcnow()
@@ -417,13 +449,12 @@ def detail(uid=None):
     """Generates DPLA Map V4 JSON-LD"""
     if uid.startswith('favicon'):
         return ''
-    click.echo("UID is {}".format(uid))
     if uid is None:
         abort(404)
     uri = app.config.get("BASE_URL") + uid
-    click.echo("URI is {}".format(uri))
     raw_map_4 = __generate_profile__(uri)
-    click.echo("After generate profile {}".format(raw_map_4))
+    x = __generate_zip_file__()
+    # x=y
     return Response(raw_map_4, mimetype="application/json")
 
 
