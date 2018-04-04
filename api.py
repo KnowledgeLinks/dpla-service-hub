@@ -139,7 +139,8 @@ def __generate_profile__(instance_uri):
         #abort(404)
         #click.echo("{}#Work missing _source".format(instance_uri))
         return
-    return json.dumps(work_result)
+    return work_result.get("_source").get("bf_hasInstance", [])[0].\
+           get("bf_hasItem", [])[0].get("rml_map", {}).get("map4_json_ld")
 
 
 def __generate_resource_dump__():
