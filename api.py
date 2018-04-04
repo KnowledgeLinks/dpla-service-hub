@@ -128,14 +128,17 @@ def __get_mod_date__(entity_iri=None):
 def __generate_profile__(instance_uri):
     work_iri = "{}#Work".format(instance_uri)
     work_sha1 = hashlib.sha1(work_iri.encode())
+    click.echo("Work sha1 {}".format(work_sha1.hexdigest()))
     try:
         work_result = CONNECTIONS.search.es.get(
             "works_v1",
             work_sha1.hexdigest(),
             _source=["bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"])
     except NotFoundError:
+        click.echo("Connection NotFoundError from ES")
         return 
     if  work_result is None:
+        click.echo("Work result is None")
         #abort(404)
         #click.echo("{}#Work missing _source".format(instance_uri))
         return
