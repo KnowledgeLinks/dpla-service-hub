@@ -76,14 +76,14 @@ RdfNsManager({'acl': '<http://www.w3.org/ns/auth/acl#>',
               'schema': 'http://schema.org/',
               'skos': 'http://www.w3.org/2004/02/skos/core#',
               'xsd': 'http://www.w3.org/2001/XMLSchema#'})
+
 app.config['DIRECTORIES'].append({"name": "dump", "path": "base/dump"})
 CONFIG_MANAGER = RdfConfigManager(app.config,
                                   verify=False,
-                                  delay_check=True,
-                                  timeout=30)
+                                  delay_check=True)
 CONNECTIONS = CONFIG_MANAGER.conns
 
-print(CONFIG_MANAGER.dirs)
+
 BF = rdflib.Namespace("http://id.loc.gov/ontologies/bibframe/")
 
 W3C_DATE = "%Y-%m-%dT%H:%M:%SZ"
@@ -453,8 +453,6 @@ def detail(uid=None):
         abort(404)
     uri = app.config.get("BASE_URL") + uid
     raw_map_4 = __generate_profile__(uri)
-    x = __generate_zip_file__()
-    # x=y
     return Response(raw_map_4, mimetype="application/json")
 
 
