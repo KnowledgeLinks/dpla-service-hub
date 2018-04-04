@@ -12,7 +12,7 @@ import xml.etree.ElementTree as etree
 import requests
 import rdflib
 import sys
-import urllib.parse
+import urllib.parse, pdb
 
 import reports
 import bibcat.rml.processor as processor
@@ -77,7 +77,9 @@ RdfNsManager({'acl': '<http://www.w3.org/ns/auth/acl#>',
               'skos': 'http://www.w3.org/2004/02/skos/core#',
               'xsd': 'http://www.w3.org/2001/XMLSchema#'})
 
-CONFIG_MANAGER = RdfConfigManager(app.config, verify=False)
+CONFIG_MANAGER = RdfConfigManager(app.config,
+                                  verify=False,
+                                  delay_check=True)
 CONNECTIONS = CONFIG_MANAGER.conns
 
 BF = rdflib.Namespace("http://id.loc.gov/ontologies/bibframe/")
@@ -132,7 +134,6 @@ def __generate_profile__(instance_uri):
     work_sha1 = hashlib.sha1(work_iri.encode())
     click.echo("Work sha1 {}".format(work_sha1.hexdigest()))
     source_filter = "bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"
-    jqry_str = ".".join(['$', source_filter])
     try:
         click.echo("Before call to search")
         work_result = CONNECTIONS.search.es.get(
@@ -153,11 +154,8 @@ def __generate_profile__(instance_uri):
         #click.echo("{}#Work missing _source".format(instance_uri))
         return
     click.echo("Work result {}".format(work_result.keys()))
-    items = json_qry(work_result.get('_source', {}),
-                     jqry_str)
-    if items:
-        return items[0]
-    return
+    return json_qry(work_result.get('_source', {}),
+                    source_filter + "|first=true")
 
 
 def __generate_resource_dump__():
