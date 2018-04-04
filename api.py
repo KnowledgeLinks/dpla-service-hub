@@ -77,7 +77,9 @@ RdfNsManager({'acl': '<http://www.w3.org/ns/auth/acl#>',
               'skos': 'http://www.w3.org/2004/02/skos/core#',
               'xsd': 'http://www.w3.org/2001/XMLSchema#'})
 
-CONFIG_MANAGER = RdfConfigManager(app.config, verify=False)
+CONFIG_MANAGER = RdfConfigManager(app.config, 
+    delay_check=True,
+    verify=False)
 CONNECTIONS = CONFIG_MANAGER.conns
 
 BF = rdflib.Namespace("http://id.loc.gov/ontologies/bibframe/")
