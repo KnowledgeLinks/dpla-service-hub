@@ -11,6 +11,7 @@ import pkg_resources
 import xml.etree.ElementTree as etree
 import requests
 import rdflib
+import sys
 import urllib.parse
 
 import reports
@@ -130,12 +131,17 @@ def __generate_profile__(instance_uri):
     work_sha1 = hashlib.sha1(work_iri.encode())
     click.echo("Work sha1 {}".format(work_sha1.hexdigest()))
     try:
+        click.echo("Before call to search")
         work_result = CONNECTIONS.search.es.get(
             "works_v1",
             work_sha1.hexdigest(),
             _source=["bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"])
+        click.echo("After es call")
     except NotFoundError:
         click.echo("Connection NotFoundError from ES")
+        return
+    except:
+        click.echo("Raised error {}".format(sys.exc_info()))
         return 
     if  work_result is None:
         click.echo("Work result is None")
