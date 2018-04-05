@@ -92,7 +92,7 @@ W3C_DATE = "%Y-%m-%dT%H:%M:%SZ"
 MAP4_PATH = "bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"
 # add a 'first' call to strip the list return of the value
 MAP4_JSON_QRY = MAP4_PATH + "|first=true"
-
+DATE_PATH = "bf_hasInstance.bf_generationProcess.bf_generationDate"
 __version__ = "1.0.0"
 
 #cache = Cache(app, config={"CACHE_TYPE": "filesystem",
@@ -164,10 +164,12 @@ SELECT (count(?s) as ?count) WHERE {
    ?s rdf:type bf:Instance .
    ?item bf:itemOf ?s .
 }""")
+    limit = 50000
     count = int(bindings[0].get('count').get('value'))
-    shards = math.ceil(count/50000)
+    shards = math.ceil(count/limit)
+    scan = __get_scan__([MAP4_PATH, DATE_PATH, 'uri', "bf_hasInstance.uri"])
     for i in range(0, shards):
-        zip_info = __generate_zip_file__(i)
+        zip_info = __generate_zip_file__(scan, i, limit)
         try:
             zip_modified = datetime.datetime.fromtimestamp(zip_info.get('date'))
             last_mod = zip_modified.strftime("%Y-%m-%d")
@@ -178,7 +180,7 @@ SELECT (count(?s) as ?count) WHERE {
             len(zip_info.get('errors', []))))
         r_dump.add(
             Resource(url_for('resource_zip',
-                             count=i*50000),
+                             count=i*limit),
                      lastmod=last_mod,
                      mime_type="application/zip",
                      length=zip_info.get("size")
@@ -186,14 +188,18 @@ SELECT (count(?s) as ?count) WHERE {
         )
     return r_dump
 
-def __generate_zip_file__(offset=0):
+def __get_scan__(source=None):
+    """
+    Returns a elasticsearch_dsl scan object
+    """
+    s = Search(using=CONNECTIONS.search.es).index("works").source(source)
+    s = s.sort({'uri': {"order": "asc"}})
+    s.params(preserve_order=True)
+    return s.scan()
 
-    def get_scan(source=None):
-        """
-        Returns a elasticsearch_dsl scan object
-        """
-        s = Search(using=CONNECTIONS.search.es).index("works").source(source)
-        return s.scan()
+def __generate_zip_file__(scan, offset=0, limit=50000):
+
+
     start = datetime.datetime.utcnow()
     click.echo("Started at {}".format(start.ctime()))
     manifest = ResourceDumpManifest()
@@ -217,17 +223,17 @@ def __generate_zip_file__(offset=0):
     # instances = __get_instances__(offset)
     errors = []
     # click.echo("Iterating through {:,} instances".format(len(instances)))
-    date_path = "bf_hasInstance.bf_generationProcess.bf_generationDate"
-    date_qry = date_path + "|first=True"
+
+    date_qry = DATE_PATH + "|first=True"
     curr_date = __get_mod_date__()
     i = 0
-    for hit in get_scan([MAP4_PATH, date_path, 'uri', "bf_hasInstance.uri"]):
+    for hit in scan:
         hit_date = json_qry(hit._d_, date_qry)
         last_mod = curr_date
         instance_iri = json_qry(hit._d_, "bf_hasInstance.uri|first=true")
         if hit_date:
             last_mod = XsdDatetime(hit_date).strftime(W3C_DATE)
-        key = hit.uri.split("/")[-1]
+        key = instance_iri.split("/")[-1]
         path = "resources/{}.json".format(key)
         raw_json = json_qry(hit._d_, MAP4_JSON_QRY)
         if raw_json is None:
@@ -243,6 +249,8 @@ def __generate_zip_file__(offset=0):
                      length="{}".format(len(raw_json)),
                      path=path))
         i += 1
+        if i == limit:
+            break
     # for i,row in enumerate(instances):
     #     instance_iri = row.get("instance").get('value')
     #     key = instance_iri.split("/")[-1]
