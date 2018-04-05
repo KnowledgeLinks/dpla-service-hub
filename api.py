@@ -23,8 +23,7 @@ from elasticsearch.exceptions import NotFoundError
 from elasticsearch_dsl import Search, Q
 
 from flask import abort, Flask, jsonify, request, render_template, Response
-from flask import flash, url_for
-from flask import flash
+from flask import flash, url_for, send_from_directory, send_file
 #from flask_cache import Cache
 
 from resync import CapabilityList, ResourceDump, ResourceDumpManifest
@@ -41,6 +40,8 @@ from rdfframework.configuration import RdfConfigManager
 from rdfframework.datamanager import DefinitionManager
 from rdfframework.datatypes import RdfNsManager, XsdDatetime
 from rdfframework.datasets import json_qry
+
+#from load import setup_dpla_indexing
 
 RmlManager().register_defs([('package_all', 'bibcat.maps')])
 # Define vocabulary and definition file locations
@@ -99,13 +100,12 @@ __version__ = "1.0.0"
 #                           "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
 
 
-def __run_query__(query):
-    """Helper function returns results from sparql query"""
-    result = requests.post(app.config.get("TRIPLESTORE_URL"),
-        data={"query": query,
-              "format": "json"})
-    if result.status_code < 400:
-        return result.json().get('results').get('bindings')
+def __get_capability_list_url__():
+    try:
+        url = url_for('capability_list')
+    except RuntimeError:
+        url = "{}capabilitylist.xml".format(app.config.get("BASE_URL"))
+    return url
 
 def __get_instances__(offset=0):
     """Helper function used by siteindex and resourcedump views
@@ -151,13 +151,13 @@ def __generate_profile__(instance_uri):
         return
     if  work_result is None:
         return
-    click.echo("Work result {}".format(work_result.keys()))
     return json_qry(work_result.get('_source', {}), MAP4_JSON_QRY)
 
-def __generate_resource_dump__():
+def generate_resource_dump():
     r_dump = ResourceDump()
+    
     r_dump.ln.append({"rel": "resourcesync",
-                      "href": url_for('capability_list')})
+                      "href": __get_capability_list_url__()})
 
     bindings = CONNECTIONS.datastore.query("""
 SELECT (count(?s) as ?count) WHERE {
@@ -178,9 +178,15 @@ SELECT (count(?s) as ?count) WHERE {
             last_mod = zip_info.get('date')[0:10]
         click.echo("Total errors {:,}".format(
             len(zip_info.get('errors', []))))
+        try:
+            zip_url = url_for('resource_zip',
+                             count=i*limit)
+        except RuntimeError: # Running outside of app context
+            zip_url = "{}resourcedump-{}.zip".format(
+                app.config.get("BASE_URL"),
+                i*limit)
         r_dump.add(
-            Resource(url_for('resource_zip',
-                             count=i*limit),
+            Resource(zip_url,
                      lastmod=last_mod,
                      mime_type="application/zip",
                      length=zip_info.get("size")
@@ -205,13 +211,9 @@ def __generate_zip_file__(scan, offset=0, limit=50000):
     manifest = ResourceDumpManifest()
     manifest.modified = datetime.datetime.utcnow().isoformat()
     manifest.ln.append({"rel": "resourcesync",
-                        "href": url_for('capability_list')})
-    file_name = "{}-{:03}.zip".format(
-                               datetime.datetime.utcnow().toordinal(),
+                        "href": __get_capability_list_url__()})
+    file_name = "resourcedump-{:03}.zip".format(
                                offset)
-
-    # tmp_location = os.path.join(app.config.get("DIRECTORIES")[0].get("path"),
-    #                             "dump/{}".format(file_name))
     tmp_location = os.path.join(CONFIG_MANAGER.dirs.dump, file_name)
     if os.path.exists(tmp_location) is True:
         return {"date": os.path.getmtime(tmp_location),
@@ -220,10 +222,7 @@ def __generate_zip_file__(scan, offset=0, limit=50000):
                        mode="w",
                        compression=ZIP_DEFLATED,
                        allowZip64=True)
-    # instances = __get_instances__(offset)
     errors = []
-    # click.echo("Iterating through {:,} instances".format(len(instances)))
-
     date_qry = DATE_PATH + "|first=True"
     curr_date = __get_mod_date__()
     i = 0
@@ -253,45 +252,24 @@ def __generate_zip_file__(scan, offset=0, limit=50000):
         i += 1
         if i == limit:
             break
-    # for i,row in enumerate(instances):
-    #     instance_iri = row.get("instance").get('value')
-    #     key = instance_iri.split("/")[-1]
-    #     if not "date" in row:
-    #         last_mod = __get_mod_date__()
-    #     else:
-    #         last_mod = "{}".format(row.get("date").get("value")[0:10])
-    #     path = "resources/{}.json".format(key)
-        # if not i%25 and i > 0:
-        #     click.echo(".", nl=False)
-        # if not i%100:
-        #     click.echo("{:,}".format(i), nl=False)
-    #     raw_json = __generate_profile__(instance_iri)
-    #     if raw_json is None:
-    #         errors.append(instance_iri)
-    #         continue
-    #     elif len(raw_json) < 1:
-    #         click.echo(instance_iri, nl=False)
-    #         break
-    #     dump_zip.writestr(path,
-    #                       raw_json)
-    #     manifest.add(
-    #         Resource(instance_iri,
-    #                  lastmod=last_mod,
-    #                  length="{}".format(len(raw_json)),
-    #                  path=path))
-    print("COUNT: ", i)
-    print("Time: ", (datetime.datetime.utcnow()-start))
+    click.echo("COUNT: {:,}".format(i))
+    click.echo("Time: {:,} seconds".format(
+        (datetime.datetime.utcnow()-start).seconds))
     dump_zip.writestr("manifest.xml", manifest.as_xml())
     dump_zip.close()
     end = datetime.datetime.utcnow()
     zip_size = os.stat(tmp_location).st_size
-    click.echo("Finished at {}, total time {} min, size={}".format(
+    click.echo("Finished at {}, total time {} min, size={:,}".format(
         end.ctime(),
         (end-start).seconds / 60.0,
         i))
     return {"date": datetime.datetime.utcnow().isoformat(),
             "size": zip_size,
             "errors": errors}
+
+@app.cli.command()
+def init_data():
+    setup_dpla_indexing()
 
 @app.template_filter("pretty_num")
 def nice_number(raw_number):
@@ -302,6 +280,10 @@ def nice_number(raw_number):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html", error=e), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template("500.html", error=e), 500
 
 @app.route("/")
 def home():
@@ -393,16 +375,15 @@ def capability_list():
 
 @app.route("/resourcedump.xml")
 def resource_dump():
-    xml = __generate_resource_dump__()
-    return Response(xml.as_xml(),
-            mimetype="text/xml")
+    return send_from_directory(CONFIG_MANAGER.dirs.dump,
+        "resourcedump.xml",
+        mimetype="text/xml")
+            
 
 @app.route("/resourcedump-<int:count>.zip")
 def resource_zip(count):
-    zip_location = os.path.join(app.config.get("DIRECTORIES")[0].get("path"),
-                                "dump/resour{}".format(file_name))
-    zip_location = os.path.join(PROJECT_BASE,
-        "dump/{}.zip".format(count))
+    zip_location = os.path.join(CONFIG_MANAGER.dirs.dump,
+        "resourcedump-{:03}.zip".format(count))
     if not os.path.exists(zip_location):
         abort(404)
     return send_file(zip_location)
