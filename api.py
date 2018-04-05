@@ -243,6 +243,8 @@ def __generate_zip_file__(scan, offset=0, limit=50000):
             click.echo(".", nl=False)
         if not i%100:
             click.echo("{:,}".format(i), nl=False)
+        dump_zip.writestr(path,
+                          raw_json)
         manifest.add(
             Resource(instance_iri,
                      lastmod=last_mod,
