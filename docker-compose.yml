@@ -17,6 +17,7 @@ services:
     volumes:
       - /opt/bibcat_repository/fedora-data:/usr/share/fedora-data
       - /opt/bibcat_triplestore:/usr/share/blazegraph
+      - /opt/bibcat_search:/opt/elasticsearch/data
       - $HOME/local_data:/local_data
     networks:
       - new
