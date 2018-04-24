@@ -2,7 +2,9 @@
 <head>
     <meta charset="UTF-8">
     <title>DPLA Service Hub version {{ version }}</title>
-    <style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" >
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome-all.min.css') }}">.
+    {#<style>
         body {
             font: 1.75em "Open Sans", sans-serif; 
         }
@@ -12,13 +14,13 @@
             background-color: rgb(192,192,192);
             padding: 1em;
         }
-    </style>
+    </style>#}
 </head>
 <body>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
-        <div>
-            <h2 style="color: red">ALERT!</h2>
+        <div class="container">
+            <h2 class="bg-danger">ALERT!</h2>
             <ul>
             {% for message in messages %}
                 <li>{{ message }}</li>
@@ -27,13 +29,19 @@
         </div>
         {% endif %}
     {% endwith %}
+    {% block header %}
+        {% include 'header.html' %}
+    {% endblock %}
     {% block main %}
     {% endblock %}
-<footer>
+<footer class="container footer">
     Code Repository available on Github at 
     <a href="https://github.com/KnowledgeLinks/dpla-service-hub">
         https://github.com/KnowledgeLinks/dpla-service-hub
     </a>. Technology by <a href="http://knowledgelinks.io">KnowledgeLinks.io</a> 
 </footer> 
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 </body>
 </html>
