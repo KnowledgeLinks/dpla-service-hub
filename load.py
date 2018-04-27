@@ -1,6 +1,7 @@
 __author__ = "Jeremy Nelson"
 
 import click
+import subprocess
 
 from rdfframework.configuration import RdfConfigManager
 from rdfframework import rdfclass
@@ -29,7 +30,6 @@ def cleanup_data(queries, name):
                           for item in result.split("\r\n")
                           if item]))
 
-
 def setup_dpla_indexing():
     CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -43,6 +43,7 @@ def setup_dpla_indexing():
         conf_mgr.conns.datastore,
         conf_mgr.conns.search,
         no_threading=False,
+        reset_idx=True,
         idx_only_base=True)
     click.echo("Generating Resource Dump")
     resource_dump = generate_resource_dump()
@@ -50,6 +51,10 @@ def setup_dpla_indexing():
       "resourcedump.xml")
     with open(tmp_location, 'w+') as fo:
         fo.write(resource_dump.as_xml())
+    subprocess.run(["docker",
+                    "cp",
+                    "/home/p2p_user/tmp/dump/.",
+                    "dplaservicehub_bibcat_1:/opt/dpla-service-hub/dump"])
 
 
 UW_MISSING_HELD_BY_QRY = """

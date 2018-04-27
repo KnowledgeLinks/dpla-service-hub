@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 
 {% block main %}
-<h1>Plains2Peaks</h1>
-<h3>DPLA Service Hub version: {{ version }}, triples: {{ count }}</h3>
-<ul>
-    <li><a href="https://dp.la/info/developers/map/">DPLA v.4 MAP</a></li>
-    <li><a href="{{ url_for('site_index') }}">ResourceSync Sitemap Index</a></li>
-    <li><a href="{{ url_for('reporting') }}">Reports</a></li>
+<div class="container">
+    
+    <h1>Plains2Peaks</h1>
+    <h3>DPLA Service Hub version: {{ version }}, triples: {{ count }}</h3>
+    <ul>
+        <li><a href="https://dp.la/info/developers/map/">DPLA v.4 MAP</a></li>
+        <li><a href="{{ url_for('site_index') }}">ResourceSync Sitemap Index</a></li>
+        <li><a href="{{ url_for('reporting') }}">Reports</a></li>
 </ul>
+</div>
 {% endblock %}
->>>>>>> master
