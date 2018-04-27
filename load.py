@@ -42,7 +42,7 @@ def setup_dpla_indexing():
         rdfclass.bf_Work,
         conf_mgr.conns.datastore,
         conf_mgr.conns.search,
-        no_threading=False,
+        no_threading=True,
         reset_idx=True,
         idx_only_base=True)
     click.echo("Generating Resource Dump")

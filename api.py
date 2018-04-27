@@ -450,6 +450,8 @@ def detail(uid=None):
         abort(404)
     uri = app.config.get("BASE_URL") + uid
     raw_map_4 = __generate_profile__(uri)
+    if raw_map_4 is None:
+        abort(404)
     return Response(raw_map_4, mimetype="application/json")
 
 
