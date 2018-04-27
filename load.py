@@ -11,14 +11,13 @@ import os, sys, pdb
 
 from api import generate_resource_dump, app, CONFIG_MANAGER
 
-def cleanup_data():
+def cleanup_data(queries, name):
     """
     runs cleanup queries
     """
-    queries = bibcat.sparql.cleanup.CLEANUP_QRY_SERIES
     conn = CONFIG_MANAGER.conns.datastore
 
-    click.echo("Runnung data cleanup queries")
+    click.echo("Running '%s' cleanup queries." % name)
     results = sparql.run_query_series(queries, conn)
     click.echo("Finished cleanup queries")
     for i, result in enumerate(results):
@@ -40,11 +39,11 @@ def setup_dpla_indexing():
     mappings.initialize_indices()
     click.echo("Finished initialized ES mapping Indices")
     dpla_search = search.EsRdfBulkLoader(
-      rdfclass.bf_Work,
-      conf_mgr.conns.datastore,
-      conf_mgr.conns.search,
-      no_threading=False,
-      idx_only_base=True)
+        rdfclass.bf_Work,
+        conf_mgr.conns.datastore,
+        conf_mgr.conns.search,
+        no_threading=False,
+        idx_only_base=True)
     click.echo("Generating Resource Dump")
     resource_dump = generate_resource_dump()
     tmp_location = os.path.join(conf_mgr.dirs.dump,
@@ -53,6 +52,32 @@ def setup_dpla_indexing():
         fo.write(resource_dump.as_xml())
 
 
+UW_MISSING_HELD_BY_QRY = """
+# UW_MISSING_HELD_BY_QRY
+# Adds missing bf:heldBy info for UWY records
+
+prefix bf: <http://id.loc.gov/ontologies/bibframe/>
+INSERT {
+  ?item bf:heldBy <http://www.uwyo.edu/>
+}
+WHERE
+{
+    {
+        ?item a bf:Item .
+        optional {
+            ?item bf:heldBy ?org .
+        }
+        filter(!(bound(?org)))
+    }
+    FILTER (CONTAINS(LCASE(STR(?item)), "uwdigital"))
+}
+"""
+
+
 if __name__ == "__main__":
-    cleanup_data()
+    cleanup_data(bibcat.sparql.cleanup.CLEANUP_QRY_SERIES,"1:1 resolution")
+    cleanup_data(bibcat.sparql.cleanup.CLEANUP_MISSING_TITLE_SERIES,
+                 "Missing Title Removal")
+    cleanup_data([UW_MISSING_HELD_BY_QRY],
+                 "Missing UW heldby")
     setup_dpla_indexing()
