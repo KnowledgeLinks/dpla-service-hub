@@ -100,7 +100,7 @@ MAP4_PATH = "bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"
 # add a 'first' call to strip the list return of the value
 MAP4_JSON_QRY = MAP4_PATH + "|first=true"
 DATE_PATH = "bf_hasInstance.bf_generationProcess.bf_generationDate"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 #cache = Cache(app, config={"CACHE_TYPE": "filesystem",
 #                           "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
