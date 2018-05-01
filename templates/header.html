@@ -1,7 +1,7 @@
 <div class="container">
 <img src="{{ url_for('static', filename='plains2peaks/img/1100x250ppclogo.jpg') }}" height="150">
 </div><nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">
+  <a class="navbar-brand" href="{{ url_for('home') }}">
     <img src="{{ url_for('static', filename='plains2peaks/img/Capture-300x287.png') }}" width="30" height="30" >
     </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -10,11 +10,11 @@
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav">
       <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="{{ url_for('home') }}">Home <span class="sr-only">(current)</span></a>
       </li>
-      <li class="nav-item">
+      {#<li class="nav-item">
         <a class="nav-link" href="#">Features</a>
-      </li>
+      </li>#}
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" 
             href="#" id="resyncDropdownMenuLink"

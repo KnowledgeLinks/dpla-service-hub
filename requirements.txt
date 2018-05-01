@@ -5,6 +5,7 @@ Flask
 Flask-Cache
 Flask-WTF
 Flask-Login
+Flask-Dance
 gunicorn
 click
 python-dateutil
