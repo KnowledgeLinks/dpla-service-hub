@@ -15,3 +15,4 @@ rdfframework
 resync
 elasticsearch
 elasticsearch_dsl
+bibcat_publisher

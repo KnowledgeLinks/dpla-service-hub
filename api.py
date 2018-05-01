@@ -42,7 +42,6 @@ from rdfframework.datatypes import RdfNsManager, XsdDatetime
 from rdfframework.datasets import json_qry
 
 try:
-    sys.path.append("D:/2018/bibcat-publisher")
     import catalog.api as catalog
     app.register_blueprint(catalog.catalog)
 except:
