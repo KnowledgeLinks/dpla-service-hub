@@ -42,7 +42,7 @@ def setup_dpla_indexing():
         rdfclass.bf_Work,
         conf_mgr.conns.datastore,
         conf_mgr.conns.search,
-        no_threading=False,
+        no_threading=True,
         reset_idx=True,
         idx_only_base=True)
     click.echo("Generating Resource Dump")
@@ -80,9 +80,9 @@ WHERE
 
 
 if __name__ == "__main__":
-    cleanup_data(bibcat.sparql.cleanup.CLEANUP_QRY_SERIES,"1:1 resolution")
-    cleanup_data(bibcat.sparql.cleanup.CLEANUP_MISSING_TITLE_SERIES,
-                 "Missing Title Removal")
-    cleanup_data([UW_MISSING_HELD_BY_QRY],
-                 "Missing UW heldby")
+    # cleanup_data(bibcat.sparql.cleanup.CLEANUP_QRY_SERIES,"1:1 resolution")
+    # cleanup_data(bibcat.sparql.cleanup.CLEANUP_MISSING_TITLE_SERIES,
+    #              "Missing Title Removal")
+    # cleanup_data([UW_MISSING_HELD_BY_QRY],
+    #              "Missing UW heldby")
     setup_dpla_indexing()
