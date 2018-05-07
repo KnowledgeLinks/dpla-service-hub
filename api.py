@@ -42,7 +42,6 @@ from rdfframework.datatypes import RdfNsManager, XsdDatetime
 from rdfframework.datasets import json_qry
 
 try:
-    sys.path.append("D:/2018/bibcat-publisher")
     import catalog.api as catalog
     app.register_blueprint(catalog.catalog)
 except:
@@ -100,7 +99,7 @@ MAP4_PATH = "bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"
 # add a 'first' call to strip the list return of the value
 MAP4_JSON_QRY = MAP4_PATH + "|first=true"
 DATE_PATH = "bf_hasInstance.bf_generationProcess.bf_generationDate"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 #cache = Cache(app, config={"CACHE_TYPE": "filesystem",
 #                           "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
@@ -450,6 +449,8 @@ def detail(uid=None):
         abort(404)
     uri = app.config.get("BASE_URL") + uid
     raw_map_4 = __generate_profile__(uri)
+    if raw_map_4 is None:
+        abort(404)
     return Response(raw_map_4, mimetype="application/json")
 
 

@@ -14,4 +14,4 @@ RUN apt-get update && apt-get install -y git && \
     mkdir instance
 COPY instance/config.py $HOME/instance/config.py
 WORKDIR $HOME
-CMD ["nohup", "gunicorn", "-b", "0.0.0.0:5000", "api:app"]
+CMD ["nohup", "gunicorn", "-b", "0.0.0.0:5000","debug", "api:app"]
