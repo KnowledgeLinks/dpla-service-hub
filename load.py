@@ -2,6 +2,7 @@ __author__ = "Jeremy Nelson"
 
 import click
 import subprocess
+import json
 
 from rdfframework.configuration import RdfConfigManager
 from rdfframework import rdfclass
@@ -10,7 +11,7 @@ from rdfframework import sparql
 import bibcat
 import os, sys, pdb
 
-from api import generate_resource_dump, app, CONFIG_MANAGER
+from api import generate_resource_dump, app, CONFIG_MANAGER, STATISTICS_COUNTS
 
 def cleanup_data(queries, name):
     """
@@ -36,7 +37,7 @@ def setup_dpla_indexing():
     conf_mgr = CONFIG_MANAGER
     click.echo("Configuration Manager {}".format(conf_mgr))
     mappings = search.EsMappings()
-    mappings.initialize_indices()
+    mappings.initialize_indices(action='reset')
     click.echo("Finished initialized ES mapping Indices")
     dpla_search = search.EsRdfBulkLoader(
         rdfclass.bf_Work,
@@ -46,7 +47,7 @@ def setup_dpla_indexing():
         reset_idx=True,
         idx_only_base=True)
     click.echo("Generating Resource Dump")
-    resource_dump = generate_resource_dump()
+    resource_dump = generate_resource_dump(True)
     tmp_location = os.path.join(conf_mgr.dirs.dump,
       "resourcedump.xml")
     with open(tmp_location, 'w+') as fo:
@@ -80,9 +81,10 @@ WHERE
 
 
 if __name__ == "__main__":
-    # cleanup_data(bibcat.sparql.cleanup.CLEANUP_QRY_SERIES,"1:1 resolution")
-    # cleanup_data(bibcat.sparql.cleanup.CLEANUP_MISSING_TITLE_SERIES,
-    #              "Missing Title Removal")
-    # cleanup_data([UW_MISSING_HELD_BY_QRY],
-    #              "Missing UW heldby")
+    cleanup_data(bibcat.sparql.cleanup.CLEANUP_QRY_SERIES,"1:1 resolution")
+    cleanup_data(bibcat.sparql.cleanup.CLEANUP_MISSING_TITLE_SERIES,
+                 "Missing Title Removal")
+    cleanup_data([UW_MISSING_HELD_BY_QRY],
+                 "Missing UW heldby")
     setup_dpla_indexing()
+    STATISTICS_COUNTS.print()

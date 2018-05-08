@@ -40,6 +40,7 @@ from rdfframework.configuration import RdfConfigManager
 from rdfframework.datamanager import DefinitionManager
 from rdfframework.datatypes import RdfNsManager, XsdDatetime
 from rdfframework.datasets import json_qry
+from rdfframework.utilities.statistics import DictionaryCounter
 
 try:
     import catalog.api as catalog
@@ -158,9 +159,12 @@ def __generate_profile__(instance_uri):
         return
     return json_qry(work_result.get('_source', {}), MAP4_JSON_QRY)
 
-def generate_resource_dump():
+STATISTICS_COUNTS = DictionaryCounter(sub_total='@graph|edm:dataProvider',
+                                      list_blank='@graph|dcterm:title')
+
+def generate_resource_dump(force_new=False):
     r_dump = ResourceDump()
-    
+
     r_dump.ln.append({"rel": "resourcesync",
                       "href": __get_capability_list_url__()})
 
@@ -174,7 +178,7 @@ SELECT (count(?s) as ?count) WHERE {
     shards = math.ceil(count/limit)
     scan = __get_scan__([MAP4_PATH, DATE_PATH, 'uri', "bf_hasInstance.uri"])
     for i in range(0, shards):
-        zip_info = __generate_zip_file__(scan, i, limit)
+        zip_info = __generate_zip_file__(scan, i, limit, force_new)
         try:
             zip_modified = datetime.datetime.fromtimestamp(zip_info.get('date'))
             last_mod = zip_modified.strftime("%Y-%m-%d")
@@ -208,7 +212,7 @@ def __get_scan__(source=None):
     s.params(preserve_order=True)
     return s.scan()
 
-def __generate_zip_file__(scan, offset=0, limit=50000):
+def __generate_zip_file__(scan, offset=0, limit=50000, force_new=False):
 
 
     start = datetime.datetime.utcnow()
@@ -220,7 +224,7 @@ def __generate_zip_file__(scan, offset=0, limit=50000):
     file_name = "resourcedump-{:03}.zip".format(
                                offset)
     tmp_location = os.path.join(CONFIG_MANAGER.dirs.dump, file_name)
-    if os.path.exists(tmp_location) is True:
+    if os.path.exists(tmp_location) is True and not force_new:
         return {"date": os.path.getmtime(tmp_location),
                 "size": os.path.getsize(tmp_location)}
     dump_zip = ZipFile(tmp_location,
@@ -243,6 +247,7 @@ def __generate_zip_file__(scan, offset=0, limit=50000):
         if raw_json is None:
             errors.append(instance_iri)
             continue
+        STATISTICS_COUNTS(json.loads(raw_json))
         if not i%25 and i > 0:
             click.echo(".", nl=False)
         if not i%100:
@@ -383,7 +388,7 @@ def resource_dump():
     return send_from_directory(CONFIG_MANAGER.dirs.dump,
         "resourcedump.xml",
         mimetype="text/xml")
-            
+
 
 @app.route("/resourcedump-<int:count>.zip")
 def resource_zip(count):
