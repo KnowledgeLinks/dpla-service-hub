@@ -3,7 +3,7 @@
     <meta charset="UTF-8">
     <title>DPLA Service Hub version {{ version }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" >
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome-all.min.css') }}">.
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome-all.min.css') }}">
     {#<style>
         body {
             font: 1.75em "Open Sans", sans-serif; 
@@ -34,14 +34,55 @@
     {% endblock %}
     {% block main %}
     {% endblock %}
-<footer class="container footer">
+<footer class="container footer m-1">
     Code Repository available on Github at 
     <a href="https://github.com/KnowledgeLinks/dpla-service-hub">
         https://github.com/KnowledgeLinks/dpla-service-hub
     </a>. Technology by <a href="http://knowledgelinks.io">KnowledgeLinks.io</a> 
 </footer> 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/popper.min.js') }}" ></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/typeahead.bundle.js') }}"></script>
+{% block more_js %}
+<script>
+$(document).ready(function() {
+    var workSuggest = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        remote: {
+            url: "{{ url_for('catalog.auto_suggest', name='work') }}?q=%QUERY",
+            wildcard: '%QUERY'
+        }
+    });
+
+    $("#suggest-query .typeahead").typeahead({
+        highlight: true
+    },
+    {
+        name: 'work-access',
+        display: 'label',
+        id: 'id',
+        source: workSuggest.ttAdapter(),
+        templates: {
+            empty: [
+                '<div style="padding: 1em 2m">',
+                'Failed to match',
+                '</div>'
+            ].join("\n"),
+            suggestion: function(data) {
+                //console.log("data html is " + data);
+                return data;
+            }
+        }
+    }).on('typeahead:select', function(obj, datum) {
+            $.post({
+                url: "{{ url_for('catalog.search_data') }}",
+                data: datum.label
+            });
+    });
+});
+</script>
+{% endblock %}
 </body>
 </html>

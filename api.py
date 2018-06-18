@@ -100,7 +100,7 @@ MAP4_PATH = "bf_hasInstance.bf_hasItem.rml_map.map4_json_ld"
 # add a 'first' call to strip the list return of the value
 MAP4_JSON_QRY = MAP4_PATH + "|first=true"
 DATE_PATH = "bf_hasInstance.bf_generationProcess.bf_generationDate"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 #cache = Cache(app, config={"CACHE_TYPE": "filesystem",
 #                           "CACHE_DIR": os.path.join(PROJECT_BASE, "cache")})
@@ -295,6 +295,10 @@ def page_not_found(e):
 def internal_server_error(e):
     return render_template("500.html", error=e), 500
 
+@app.template_filter("isinstance")
+def is_type(obj, class_):
+    return isinstance(obj, eval(class_))
+
 @app.route("/")
 def home():
     """Default page"""
@@ -445,18 +449,49 @@ def sitemap(offset=0):
     xml = resource_list.as_xml()
     return Response(xml, mimetype="text/xml")
 
-@app.route("/<path:uid>.json")
-def detail(uid=None):
+
+@app.route("/<path:uid>")
+@app.route("/<path:uid>.<ext>")
+def detail(uid=None, ext=None):
     """Generates DPLA Map V4 JSON-LD"""
     if uid.startswith('favicon'):
         return ''
     if uid is None:
         abort(404)
+    # First try uid as SHA1 key of Work
+    try:
+        work = CONNECTIONS.search.es.get(
+                "works",
+                id=uid,
+                doc_type="work")
+        return render_template("detail.html",
+            version=__version__,
+            work=work)
+    except NotFoundError:
+        pass
     uri = app.config.get("BASE_URL") + uid
-    raw_map_4 = __generate_profile__(uri)
-    if raw_map_4 is None:
-        abort(404)
-    return Response(raw_map_4, mimetype="application/json")
+    if ext and ext.endswith("json"):
+        raw_map_4 = __generate_profile__(uri)
+        if raw_map_4 is None:
+            abort(404)
+        return Response(raw_map_4, mimetype="application/json")
+    else:
+        if uri.endswith("Work"):
+            work_iri = uri
+        else:
+            work_iri = "{}#Work".format(uri)
+        work_sha1 = hashlib.sha1(work_iri.encode()).hexdigest()
+        try:
+            work =  CONNECTIONS.search.es.get(
+                    "works",
+                    id=work_sha1,
+                    doc_type="work")
+        except NotFoundError:
+            abort(404)
+        return render_template("detail.html",
+            version=__version__,
+            work=work)
+        
 
 
 if __name__ == '__main__':

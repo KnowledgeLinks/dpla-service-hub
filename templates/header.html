@@ -30,12 +30,13 @@
 
         </div>
       </li>
-      {#  <form class="form-inline my-2 my-lg-0 pull-right" action="{{ url_for('catalog.search_data') }}" method="POST">
-            <input name="query" class="form-control mr-sm-4" type="search" placeholder="{% if query_phrase %}{{ query_phrase }}{% else %}Search{% endif %}" aria-label="Search">
+       <form class="form-inline my-2 my-lg-0 pull-right" action="{{ url_for('catalog.search_data') }}" method="POST" >
+            <div id="suggest-query">
+                <input name="query" class="form-control mr-sm-3 typeahead" type="search" placeholder="{% if query_phrase %}{{ query_phrase }}{% else %}Search{% endif %}" aria-label="Search">
+            </div>
             <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
-        #}
-      <li class="nav-item dropdown pull-right">
+      <li class="nav-item dropdown {#pull-right#}">
         <a class="nav-link dropdown-toggle" href="#" id="helpDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Help 
         </a>
@@ -48,3 +49,4 @@
 
   </div>
 </nav>
+
