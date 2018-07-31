@@ -15,7 +15,7 @@
 This [project][HOME] provides a lightweight [DP.LA][DPLA] aggregation feed and 
 a command-line interface for ingesting different
 bibliographic and metadata vocabularies like [MODS][MODS], 
-[Dublin Core][DC], and [MARC][MARC] into a [RDF triplestore][BL] as
+[Dublin Core][DC], and [MARC][MARC] into a [RDF triplestore][BG] as
 [BIBFRAME 2.0][BF] linked-data. This project is based [KnowledgeLinks.io][KL]'s Catalog Pull 
 Platform using the [RDF Framework][RDFF] and [BIBCAT][BC]. 
 
