@@ -29,7 +29,7 @@ services:
     networks:
       - new
     volumes:
-      - /etc/letsencrypt/live/plains2peaks.org:/etc/nginx/ssl/
+      - /etc/dpla-service-hub/instance:/etc/nginx/ssl
     ports:
       - "80:80"
       - "443:443"
