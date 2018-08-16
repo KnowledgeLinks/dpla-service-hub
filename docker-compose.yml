@@ -28,6 +28,8 @@ services:
       dockerfile: DockerNginx
     networks:
       - new
+    volumes:
+      - /etc/letsencrypt/live/plains2peaks.org:/etc/nginx/ssl/
     ports:
       - "80:80"
       - "443:443"
